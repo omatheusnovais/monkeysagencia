@@ -21,10 +21,10 @@ const INSTAGRAM_PERSONAL = "https://www.instagram.com/omatheusnovais";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Monkeys Agência - Tráfego Pago com IA | Geração de Leads Qualificados" },
-      { name: "description", content: "A Monkeys Agência cria sistemas previsíveis de aquisição de clientes com Meta Ads, Google Ads, Landing Pages otimizadas e automações com IA. Diagnóstico gratuito." },
-      { property: "og:title", content: "Monkeys Agência - Tráfego Pago com IA" },
-      { property: "og:description", content: "Sistemas previsíveis de aquisição com Meta Ads, Google Ads e IA." },
+      { title: "Monkeys Agência - Tráfego Pago | Geração de Leads Qualificados" },
+      { name: "description", content: "A Monkeys Agência cria sistemas previsíveis de aquisição de clientes com Meta Ads, Google Ads, Landing Pages otimizadas e automação. Diagnóstico gratuito." },
+      { property: "og:title", content: "Monkeys Agência - Tráfego Pago de Performance" },
+      { property: "og:description", content: "Sistemas previsíveis de aquisição com Meta Ads, Google Ads e CRM." },
       { property: "og:type", content: "website" },
     ],
   }),
@@ -182,7 +182,7 @@ function Hero() {
   const benefits = [
     "De 5 a 30 leads qualificados por dia",
     "CPA até 60% menor em 60 dias",
-    "Atendimento 24/7 com IA que vende por você",
+    "Follow-up automático que recupera quem ia escapar",
     "Previsibilidade real, sem depender de indicação",
   ];
   const stagger = {
@@ -209,7 +209,7 @@ function Hero() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
               </span>
-              Novo • Performance com IA · 2026
+              Novo • Performance de alto nível · 2026
             </motion.div>
 
             <motion.h1
@@ -236,7 +236,7 @@ function Hero() {
               variants={fadeUp}
               className="mt-7 max-w-xl text-base leading-relaxed text-white/65 md:text-lg"
             >
-              Cansado de gastar com anúncio e não ver retorno? A gente monta o seu sistema de aquisição com <span className="text-white">Meta Ads</span>, <span className="text-white">Google Ads</span>, landing page de alta conversão e IA que qualifica seus leads, para você vender todo dia, sem depender de sorte.
+              Cansado de gastar com anúncio e não ver retorno? A gente monta o seu sistema de aquisição com <span className="text-white">Meta Ads</span>, <span className="text-white">Google Ads</span>, landing page de alta conversão e automação de CRM, para você vender todo dia, sem depender de sorte.
             </motion.p>
 
             <motion.ul variants={fadeUp} className="mt-7 grid gap-2.5 sm:grid-cols-2">
@@ -418,7 +418,7 @@ function SolutionSection() {
   const steps = [
     { step: 1, title: "Diagnóstico em 24h", desc: "Auditamos suas campanhas, LP e funil, e mostramos onde está vazando dinheiro.", Icon: Search },
     { step: 2, title: "Estratégia sob medida", desc: "Criamos oferta, criativos e landing page validados para o seu nicho.", Icon: Brain },
-    { step: 3, title: "Lançamento em até 7 dias", desc: "Subimos campanhas, integramos CRM e IA e começamos a captar leads.", Icon: Rocket },
+    { step: 3, title: "Lançamento em até 7 dias", desc: "Subimos campanhas, integramos o CRM e começamos a captar leads.", Icon: Rocket },
     { step: 4, title: "Otimização e escala", desc: "Acompanhamento diário, relatórios semanais e crescimento composto.", Icon: TrendingUp },
   ];
   return (
@@ -464,7 +464,7 @@ function ServicesSection() {
     { Icon: Target, service: "Meta Ads", desc: "Campanhas que enchem seu WhatsApp de leads quentes." },
     { Icon: Search, service: "Google Ads", desc: "Apareça na hora em que o cliente já quer comprar." },
     { Icon: LayoutTemplate, service: "Landing Pages", desc: "Páginas que convertem 2 a 5x mais que o seu site atual." },
-    { Icon: Bot, service: "IA de qualificação", desc: "Atende, qualifica e agenda 24/7, sem perder lead às 22h." },
+    { Icon: Bot, service: "Atendimento qualificado", desc: "Roteiros e fluxo no WhatsApp para qualificar e agendar reuniões." },
     { Icon: Database, service: "CRM + Automação", desc: "Follow-up automático que recupera quem ia escapar." },
     { Icon: BarChart3, service: "Relatórios claros", desc: "Você vê o ROI da sua verba toda semana, sem achismo." },
   ];
@@ -600,7 +600,7 @@ function MethodFlowSection() {
   const steps = [
     { Icon: Target, label: "Meta/Google Ads" },
     { Icon: LayoutTemplate, label: "Landing Page" },
-    { Icon: Database, label: "CRM + IA" },
+    { Icon: Database, label: "CRM" },
     { Icon: Zap, label: "Automação" },
     { Icon: TrendingUp, label: "Vendas" },
   ];
@@ -800,7 +800,7 @@ function FaqSection() {
     { q: "Vocês trabalham com qual investimento mínimo?", a: "Recomendamos a partir de R$50/dia em mídia paga para gerar dados suficientes pra otimizar. Atendemos de pequenos negócios a operações grandes." },
     { q: "Preciso ter site ou landing page pronta?", a: "Não. Construímos a landing page otimizada como parte do projeto, focada 100% em conversão." },
     { q: "Como funciona o contrato?", a: "Trabalhamos com contratos mensais, sem fidelidade longa. Você pode cancelar a qualquer momento." },
-    { q: "Quais plataformas vocês usam?", a: "Meta Ads, Google Ads, Performance Max, YouTube, além de ferramentas de IA, CRM e automação." },
+    { q: "Quais plataformas vocês usam?", a: "Meta Ads, Google Ads, Performance Max, YouTube, além de CRM e ferramentas de automação." },
     { q: "Posso falar com clientes atuais?", a: "Sim. Após o diagnóstico podemos apresentar cases e referências do seu segmento." },
   ];
   return (
