@@ -209,7 +209,7 @@ function Hero() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
               </span>
-              Novo • Performance com IA · 2026
+              Novo • Performance de alto nível · 2026
             </motion.div>
 
             <motion.h1
