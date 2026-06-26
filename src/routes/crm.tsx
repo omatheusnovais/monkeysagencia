@@ -87,8 +87,10 @@ const COLUMNS: { key: Status; title: string; dot: string }[] = [
 function useTheme() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   useEffect(() => {
-    const saved = (localStorage.getItem("crm-theme") as "light" | "dark") || "light";
-    setTheme(saved);
+    // Padrão: modo claro. Respeita escolha do usuário apenas se já estiver salva.
+    const saved = localStorage.getItem("crm-theme") as "light" | "dark" | null;
+    if (!saved) localStorage.setItem("crm-theme", "light");
+    setTheme(saved ?? "light");
   }, []);
   useEffect(() => {
     document.documentElement.classList.toggle("theme-light", theme === "light");
@@ -97,6 +99,7 @@ function useTheme() {
   }, [theme]);
   return { theme, toggle: () => setTheme((t) => (t === "light" ? "dark" : "light")) };
 }
+
 
 function CrmPage() {
   const navigate = useNavigate();
