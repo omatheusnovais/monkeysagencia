@@ -296,6 +296,10 @@ function CrmPage() {
             <KpiCard color="#0f5132" label="FATURAMENTO" value="R$ 0" />
           </div>
 
+          {/* Frase do dia + Notícias */}
+          <DailyPanel />
+
+
           {/* Tabs row */}
           <div className="flex items-center justify-between gap-3 rounded-2xl bg-card border border-border px-3 py-2">
             <div className="flex items-center gap-1">
