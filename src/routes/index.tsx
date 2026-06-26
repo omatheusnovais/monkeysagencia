@@ -716,6 +716,7 @@ function OfferSection() {
     const name = String(fd.get("name") ?? "").trim();
     const company = String(fd.get("company") ?? "").trim();
     const phone = String(fd.get("phone") ?? "").trim();
+    const email = String(fd.get("email") ?? "").trim();
     const faturamento = String(fd.get("faturamento") ?? "");
     const investimento = String(fd.get("investimento") ?? "");
 
@@ -726,6 +727,8 @@ function OfferSection() {
     const { error: err } = await supabase.from("leads").insert({
       name,
       phone,
+      email: email || null,
+
       message,
       status: "novos",
       label_id: null,
@@ -791,6 +794,8 @@ function OfferSection() {
                 <Field label="Nome completo" name="name" type="text" required />
                 <Field label="Nome da empresa" name="company" type="text" required />
                 <Field label="WhatsApp" name="phone" type="tel" required />
+                <Field label="E-mail" name="email" type="email" required />
+
                 <SelectField label="Faturamento mensal" name="faturamento" options={["Até R$10k", "R$10k–30k", "R$30k–60k", "R$60k–120k", "Acima de R$120k"]} />
                 <SelectField label="Investimento diário em tráfego" name="investimento" options={["Não invisto ainda", "Até R$50/dia", "R$51–100/dia", "Acima de R$100/dia"]} />
                 {error && <p className="text-sm text-red-400" role="alert">{error}</p>}
