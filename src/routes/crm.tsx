@@ -53,9 +53,8 @@ import {
   Sun,
   Moon,
   Calendar,
-  Quote,
-  Newspaper,
-  ExternalLink,
+
+
 
 } from "lucide-react";
 
