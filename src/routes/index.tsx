@@ -418,7 +418,7 @@ function SolutionSection() {
   const steps = [
     { step: 1, title: "Diagnóstico em 24h", desc: "Auditamos suas campanhas, LP e funil, e mostramos onde está vazando dinheiro.", Icon: Search },
     { step: 2, title: "Estratégia sob medida", desc: "Criamos oferta, criativos e landing page validados para o seu nicho.", Icon: Brain },
-    { step: 3, title: "Lançamento em até 7 dias", desc: "Subimos campanhas, integramos CRM e IA e começamos a captar leads.", Icon: Rocket },
+    { step: 3, title: "Lançamento em até 7 dias", desc: "Subimos campanhas, integramos o CRM e começamos a captar leads.", Icon: Rocket },
     { step: 4, title: "Otimização e escala", desc: "Acompanhamento diário, relatórios semanais e crescimento composto.", Icon: TrendingUp },
   ];
   return (
