@@ -839,12 +839,61 @@ function Footer() {
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 md:flex-row">
         <div className="flex items-center gap-3">
           <img src={monkeysLogo.url} alt="Monkeys Agência" className="h-6 w-auto invert" />
-          <span className="text-xs text-white/40">© {new Date().getFullYear()} Monkeys Agência</span>
+          <div className="flex flex-col leading-tight">
+            <span className="text-xs font-semibold text-white/70">Monkeys Agência</span>
+            <span className="text-[11px] text-white/40">Agência de Performance · © {new Date().getFullYear()}</span>
+          </div>
         </div>
-        <div className="flex items-center gap-5 text-sm text-white/60">
-          <a href="#" className="flex items-center gap-1.5 transition-colors hover:text-white"><Instagram className="h-4 w-4" />Instagram</a>
-          <a href="#" className="flex items-center gap-1.5 transition-colors hover:text-white"><Phone className="h-4 w-4" />WhatsApp</a>
-          <a href="#" className="transition-colors hover:text-white">Política de Privacidade</a>
+        <div className="flex flex-wrap items-center justify-center gap-5 text-sm text-white/60">
+          <a href={INSTAGRAM_AGENCY} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 transition-colors hover:text-white">
+            <Instagram className="h-4 w-4" />@monkeys.agencia
+          </a>
+          <a href={INSTAGRAM_PERSONAL} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 transition-colors hover:text-white">
+            <Instagram className="h-4 w-4" />@omatheusnovais
+          </a>
+          <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 transition-colors hover:text-white">
+            <Phone className="h-4 w-4" />(62) 99351-9901
+          </a>
+          <Dialog>
+            <DialogTrigger className="transition-colors hover:text-white">Política de Privacidade</DialogTrigger>
+            <DialogContent className="max-h-[80vh] overflow-y-auto border-white/10 bg-[#0a0a0a] text-white sm:max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Política de Privacidade</DialogTitle>
+                <DialogDescription className="text-white/60">
+                  Última atualização: {new Date().toLocaleDateString("pt-BR")}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 text-sm leading-relaxed text-white/70">
+                <p>
+                  A <strong className="text-white">Monkeys Agência</strong> respeita sua privacidade e está comprometida em proteger os dados pessoais que você compartilha conosco. Esta política descreve, de forma transparente, como coletamos, usamos e armazenamos suas informações.
+                </p>
+                <div>
+                  <h3 className="mb-1 font-semibold text-white">1. Dados coletados</h3>
+                  <p>Coletamos informações fornecidas voluntariamente por você ao preencher formulários no site (nome, e-mail, telefone, empresa) e dados de navegação anônimos (cookies, UTMs, páginas visitadas) para fins estatísticos.</p>
+                </div>
+                <div>
+                  <h3 className="mb-1 font-semibold text-white">2. Uso das informações</h3>
+                  <p>Utilizamos seus dados exclusivamente para entrar em contato, enviar propostas comerciais, executar serviços contratados e melhorar a experiência no site. Não vendemos nem compartilhamos suas informações com terceiros sem autorização.</p>
+                </div>
+                <div>
+                  <h3 className="mb-1 font-semibold text-white">3. Armazenamento e segurança</h3>
+                  <p>Seus dados são armazenados em ambiente seguro, com acesso restrito à equipe da Monkeys Agência. Adotamos medidas técnicas e organizacionais razoáveis para proteção contra acessos não autorizados.</p>
+                </div>
+                <div>
+                  <h3 className="mb-1 font-semibold text-white">4. Cookies</h3>
+                  <p>Usamos cookies para análise de tráfego, remarketing e otimização de campanhas (Meta Ads, Google Ads). Você pode desativá-los nas configurações do seu navegador.</p>
+                </div>
+                <div>
+                  <h3 className="mb-1 font-semibold text-white">5. Seus direitos (LGPD)</h3>
+                  <p>Conforme a Lei Geral de Proteção de Dados (Lei 13.709/2018), você pode solicitar acesso, correção ou exclusão dos seus dados a qualquer momento.</p>
+                </div>
+                <div>
+                  <h3 className="mb-1 font-semibold text-white">6. Contato</h3>
+                  <p>Para dúvidas ou solicitações relacionadas à privacidade, fale conosco pelo WhatsApp (62) 99351-9901 ou via Instagram @monkeys.agencia.</p>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </footer>
