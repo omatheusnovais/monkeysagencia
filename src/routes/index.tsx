@@ -800,7 +800,7 @@ function FaqSection() {
     { q: "Vocês trabalham com qual investimento mínimo?", a: "Recomendamos a partir de R$50/dia em mídia paga para gerar dados suficientes pra otimizar. Atendemos de pequenos negócios a operações grandes." },
     { q: "Preciso ter site ou landing page pronta?", a: "Não. Construímos a landing page otimizada como parte do projeto, focada 100% em conversão." },
     { q: "Como funciona o contrato?", a: "Trabalhamos com contratos mensais, sem fidelidade longa. Você pode cancelar a qualquer momento." },
-    { q: "Quais plataformas vocês usam?", a: "Meta Ads, Google Ads, Performance Max, YouTube, além de ferramentas de IA, CRM e automação." },
+    { q: "Quais plataformas vocês usam?", a: "Meta Ads, Google Ads, Performance Max, YouTube, além de CRM e ferramentas de automação." },
     { q: "Posso falar com clientes atuais?", a: "Sim. Após o diagnóstico podemos apresentar cases e referências do seu segmento." },
   ];
   return (
