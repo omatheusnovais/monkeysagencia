@@ -159,10 +159,21 @@ function CrmPage() {
     const list = leadsQ.data ?? [];
     if (!search.trim()) return list;
     const q = search.toLowerCase();
-    return list.filter((l) =>
-      [l.name, l.email, l.phone, l.message].some((v) => v?.toLowerCase().includes(q))
-    );
+    return list.filter((l) => l.name?.toLowerCase().includes(q));
   }, [leadsQ.data, search]);
+
+  const [lastSeen, setLastSeen] = useState<number>(() => {
+    if (typeof window === "undefined") return 0;
+    return Number(localStorage.getItem("crm-leads-last-seen") || 0);
+  });
+  const unread = useMemo(() => {
+    return (leadsQ.data ?? []).filter((l) => new Date(l.created_at).getTime() > lastSeen).length;
+  }, [leadsQ.data, lastSeen]);
+  function markSeen() {
+    const now = Date.now();
+    localStorage.setItem("crm-leads-last-seen", String(now));
+    setLastSeen(now);
+  }
 
   const grouped = useMemo(() => {
     const map: Record<Status, Lead[]> = { novos: [], em_contato: [], contrato_fechado: [], desqualificado: [] };
