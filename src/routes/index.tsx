@@ -641,17 +641,16 @@ function AboutSection() {
   return (
     <section className="bg-[#080808] py-24">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="grid items-stretch gap-12 md:grid-cols-2">
-          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} className="h-full">
-            <div className="relative h-full">
+        <div className="grid items-center gap-12 md:grid-cols-2">
+          <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}>
+            <div className="relative">
               <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-[#4F7CFF]/30 to-[#8B5CF6]/30 blur-3xl" />
-              <div className="relative h-full w-full overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/10 to-transparent backdrop-blur">
+              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/10 to-transparent backdrop-blur">
                 <img
                   src={matheusPhoto.url}
                   alt="Matheus Novais palestrando"
-                  className="h-full w-full object-contain"
+                  className="h-full w-full object-cover object-center"
                 />
-
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#080808]/60 via-transparent to-transparent" />
               </div>
             </div>
