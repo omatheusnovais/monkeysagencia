@@ -432,7 +432,7 @@ function LeadCard({ lead, labels, dragging }: { lead: Lead; labels: LabelRow[]; 
   return (
     <div className={`rounded-xl border border-border bg-background p-4 shadow-sm hover:shadow-md transition cursor-grab active:cursor-grabbing ${dragging ? "shadow-2xl ring-2 ring-primary/50" : ""}`}>
       <div className="flex items-start justify-between gap-2">
-        <h3 className="font-bold text-sm uppercase tracking-wide truncate" style={{ fontFamily: "Georgia, serif" }}>{lead.name}</h3>
+        <h3 className="font-bold text-sm uppercase tracking-wide truncate font-display">{lead.name}</h3>
         <DropdownMenu>
           <DropdownMenuTrigger asChild onPointerDown={(e) => e.stopPropagation()}>
             <button className="p-1 hover:bg-muted rounded" aria-label="Ações"><MoreVertical className="size-4" /></button>
