@@ -49,11 +49,8 @@ function Header() {
   return (
     <header className="fixed top-0 z-50 w-full border-b border-white/5 bg-black/40 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-        <a href="#" className="flex items-center gap-2">
-          <div className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-[#4F7CFF] to-[#8B5CF6]">
-            <Sparkles className="h-4 w-4 text-white" />
-          </div>
-          <span className="text-lg font-bold tracking-tight">SuaLogo</span>
+        <a href="#" className="flex items-center gap-2" aria-label="Monkeys Agência">
+          <img src={monkeysLogo.url} alt="Monkeys Agência" className="h-7 w-auto invert" />
         </a>
         <nav className="hidden items-center gap-8 md:flex">
           {links.map(l => (
