@@ -118,14 +118,8 @@ function CrmPage() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [view, setView] = useState<"kanban" | "stats" | "news">("kanban");
-  const [ticketMedio, setTicketMedio] = useState<number>(() => {
-    if (typeof window === "undefined") return 0;
-    return Number(localStorage.getItem("crm-ticket-medio") || 0);
-  });
-  function saveTicket(v: number) {
-    setTicketMedio(v);
-    localStorage.setItem("crm-ticket-medio", String(v));
-  }
+
+
   const { theme, toggle } = useTheme();
 
   useEffect(() => {
