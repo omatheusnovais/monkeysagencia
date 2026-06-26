@@ -143,15 +143,6 @@ function CrmPage() {
     },
   });
 
-  const labelsQ = useQuery({
-    queryKey: ["labels"],
-    enabled: ready,
-    queryFn: async () => {
-      const { data, error } = await supabase.from("labels").select("*").order("name");
-      if (error) throw error;
-      return data as LabelRow[];
-    },
-  });
 
   useEffect(() => {
     if (!ready) return;
@@ -260,7 +251,6 @@ function CrmPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <LabelsManager labels={labelsQ.data ?? []} />
             <NewLeadDialog />
             <button onClick={toggle} className="size-9 rounded-full hover:bg-muted flex items-center justify-center" title="Alternar tema">
               {theme === "light" ? <Moon className="size-4" /> : <Sun className="size-4" />}
@@ -321,13 +311,13 @@ function CrmPage() {
                 <div className="flex gap-4 overflow-x-auto pb-2">
                   {COLUMNS.map((col) => (
                     <div key={col.key} className="w-[300px] shrink-0">
-                      <Column col={col} leads={grouped[col.key]} labels={labelsQ.data ?? []} />
+                      <Column col={col} leads={grouped[col.key]} />
                     </div>
                   ))}
                 </div>
               </div>
               <DragOverlay>
-                {activeLead ? <LeadCard lead={activeLead} labels={labelsQ.data ?? []} dragging /> : null}
+                {activeLead ? <LeadCard lead={activeLead} dragging /> : null}
               </DragOverlay>
             </DndContext>
           )}
@@ -419,7 +409,7 @@ function TabBtn({ active, onClick, icon, label }: { active: boolean; onClick: ()
   );
 }
 
-function Column({ col, leads, labels }: { col: { key: Status; title: string; dot: string }; leads: Lead[]; labels: LabelRow[] }) {
+function Column({ col, leads }: { col: { key: Status; title: string; dot: string }; leads: Lead[] }) {
   const { setNodeRef, isOver } = useDroppable({ id: col.key });
   return (
     <div ref={setNodeRef} className={`flex flex-col min-h-[60vh] rounded-xl transition-colors ${isOver ? "bg-primary/5" : ""}`}>
@@ -436,7 +426,7 @@ function Column({ col, leads, labels }: { col: { key: Status; title: string; dot
             Solte cards aqui
           </div>
         ) : (
-          leads.map((l) => <DraggableCard key={l.id} lead={l} labels={labels} />)
+          leads.map((l) => <DraggableCard key={l.id} lead={l} />)
         )}
       </div>
     </div>
@@ -485,27 +475,22 @@ function NewsPanel() {
   );
 }
 
-function DraggableCard({ lead, labels }: { lead: Lead; labels: LabelRow[] }) {
+function DraggableCard({ lead }: { lead: Lead }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: lead.id });
   const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` } : undefined;
   return (
     <div ref={setNodeRef} style={style} {...listeners} {...attributes} className={isDragging ? "opacity-30" : ""}>
-      <LeadCard lead={lead} labels={labels} />
+      <LeadCard lead={lead} />
     </div>
   );
 }
 
-function LeadCard({ lead, labels, dragging }: { lead: Lead; labels: LabelRow[]; dragging?: boolean }) {
+function LeadCard({ lead, dragging }: { lead: Lead; dragging?: boolean }) {
   const qc = useQueryClient();
   const [detailOpen, setDetailOpen] = useState(false);
-  const label = labels.find((l) => l.id === lead.label_id);
   const company = lead.message?.split("\n").find((line) => line.toLowerCase().includes("empresa"))?.split(":")[1]?.trim();
   const dateStr = new Date(lead.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
 
-  async function setLabel(label_id: string | null) {
-    await supabase.from("leads").update({ label_id }).eq("id", lead.id);
-    qc.invalidateQueries({ queryKey: ["leads"] });
-  }
   async function remove() {
     if (!confirm("Excluir este lead?")) return;
     await supabase.from("leads").delete().eq("id", lead.id);
@@ -525,12 +510,6 @@ function LeadCard({ lead, labels, dragging }: { lead: Lead; labels: LabelRow[]; 
               <button onClick={(e) => e.stopPropagation()} className="p-1 hover:bg-muted rounded" aria-label="Ações"><MoreVertical className="size-4" /></button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" onPointerDown={(e) => e.stopPropagation()}>
-              <DropdownMenuItem onSelect={() => setLabel(null)}>Sem etiqueta</DropdownMenuItem>
-              {labels.map((l) => (
-                <DropdownMenuItem key={l.id} onSelect={() => setLabel(l.id)}>
-                  <span className="size-2 rounded-full mr-2" style={{ background: l.color }} />{l.name}
-                </DropdownMenuItem>
-              ))}
               <DropdownMenuItem onSelect={remove} className="text-destructive">
                 <Trash2 className="size-4 mr-2" /> Excluir
               </DropdownMenuItem>
@@ -538,11 +517,6 @@ function LeadCard({ lead, labels, dragging }: { lead: Lead; labels: LabelRow[]; 
           </DropdownMenu>
         </div>
         {company && <p className="text-xs text-muted-foreground uppercase tracking-wide mt-0.5">{company}</p>}
-        {label && (
-          <Badge style={{ backgroundColor: label.color + "22", color: label.color, borderColor: label.color + "55" }} variant="outline" className="mt-2">
-            <Tag className="size-3 mr-1" />{label.name}
-          </Badge>
-        )}
         <div className="space-y-1.5 text-xs text-muted-foreground mt-3">
           {lead.email && <div className="flex items-center gap-1.5"><Mail className="size-3.5 text-primary" /><span className="truncate">{lead.email}</span></div>}
           {lead.phone && <div className="flex items-center gap-1.5"><Phone className="size-3.5 text-emerald-500" />{lead.phone}</div>}
@@ -552,72 +526,13 @@ function LeadCard({ lead, labels, dragging }: { lead: Lead; labels: LabelRow[]; 
           <span className="text-muted-foreground inline-flex items-center gap-1"><Calendar className="size-3" /> {dateStr}</span>
         </div>
       </div>
-      {!dragging && <LeadDetailDialog lead={lead} labels={labels} open={detailOpen} onOpenChange={setDetailOpen} />}
+      {!dragging && <LeadDetailDialog lead={lead} open={detailOpen} onOpenChange={setDetailOpen} />}
     </>
   );
 }
 
 
-function LabelsManager({ labels }: { labels: LabelRow[] }) {
-  const qc = useQueryClient();
-  const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<LabelRow | null>(null);
-  const [name, setName] = useState("");
-  const DEFAULT_COLOR = "#ffcc00";
 
-  function startNew() { setEditing(null); setName(""); }
-  function startEdit(l: LabelRow) { setEditing(l); setName(l.name); }
-
-  async function save() {
-    if (!name.trim()) return;
-    if (editing) {
-      await supabase.from("labels").update({ name: name.trim() }).eq("id", editing.id);
-    } else {
-      await supabase.from("labels").insert({ name: name.trim(), color: DEFAULT_COLOR });
-    }
-    qc.invalidateQueries({ queryKey: ["labels"] });
-    startNew();
-  }
-  async function remove(id: string) {
-    if (!confirm("Excluir etiqueta?")) return;
-    await supabase.from("labels").delete().eq("id", id);
-    qc.invalidateQueries({ queryKey: ["labels"] });
-    qc.invalidateQueries({ queryKey: ["leads"] });
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (o) startNew(); }}>
-      <DialogTrigger asChild>
-        <Button variant="outline" className="rounded-full"><Tag className="size-4 mr-1" /> ETIQUETAS</Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-md">
-        <DialogHeader><DialogTitle>Gerenciar etiquetas</DialogTitle></DialogHeader>
-        <div className="space-y-2 max-h-60 overflow-y-auto">
-          {labels.length === 0 && <p className="text-sm text-muted-foreground">Nenhuma etiqueta criada.</p>}
-          {labels.map((l) => (
-            <div key={l.id} className="flex items-center gap-2 p-2 rounded-lg border border-border">
-              <span className="size-4 rounded" style={{ background: l.color }} />
-              <span className="flex-1 text-sm">{l.name}</span>
-              <Button size="sm" variant="ghost" onClick={() => startEdit(l)}><Pencil className="size-3.5" /></Button>
-              <Button size="sm" variant="ghost" onClick={() => remove(l.id)}><Trash2 className="size-3.5 text-destructive" /></Button>
-            </div>
-          ))}
-        </div>
-        <div className="border-t border-border pt-4 space-y-3">
-          <h3 className="text-sm font-semibold">{editing ? "Editar etiqueta" : "Nova etiqueta"}</h3>
-          <div className="space-y-1.5">
-            <Label htmlFor="lname" className="text-xs">Nome</Label>
-            <Input id="lname" value={name} onChange={(e) => setName(e.target.value)} maxLength={40} onKeyDown={(e) => e.key === "Enter" && save()} />
-          </div>
-          <DialogFooter className="gap-2">
-            {editing && <Button variant="ghost" onClick={startNew}>Cancelar</Button>}
-            <Button onClick={save}><Plus className="size-4 mr-1" /> {editing ? "Salvar" : "Criar"}</Button>
-          </DialogFooter>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
 function NewLeadDialog() {
   const qc = useQueryClient();
@@ -702,9 +617,8 @@ function NewLeadDialog() {
   );
 }
 
-function LeadDetailDialog({ lead, labels, open, onOpenChange }: { lead: Lead; labels: LabelRow[]; open: boolean; onOpenChange: (o: boolean) => void }) {
+function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: boolean; onOpenChange: (o: boolean) => void }) {
   const qc = useQueryClient();
-  const label = labels.find((l) => l.id === lead.label_id);
   const parsed: Record<string, string> = {};
   (lead.message ?? "").split("\n").forEach((line) => {
     const idx = line.indexOf(":");
@@ -730,7 +644,6 @@ function LeadDetailDialog({ lead, labels, open, onOpenChange }: { lead: Lead; la
     email: lead.email ?? "",
     phone: lead.phone ?? "",
     status: lead.status,
-    label_id: lead.label_id ?? "",
     company: parsed["Empresa"] ?? "",
     faturamento: parsed["Faturamento mensal"] ?? parsed["Faturamento"] ?? "",
     investimento: parsed["Investimento"] ?? "",
@@ -753,7 +666,6 @@ function LeadDetailDialog({ lead, labels, open, onOpenChange }: { lead: Lead; la
       email: lead.email ?? "",
       phone: lead.phone ?? "",
       status: lead.status,
-      label_id: lead.label_id ?? "",
       company: p["Empresa"] ?? "",
       faturamento: p["Faturamento mensal"] ?? p["Faturamento"] ?? "",
       investimento: p["Investimento"] ?? "",
@@ -774,7 +686,6 @@ function LeadDetailDialog({ lead, labels, open, onOpenChange }: { lead: Lead; la
       email: form.email.trim() || null,
       phone: form.phone.trim() || null,
       status: form.status,
-      label_id: form.label_id || null,
       message: lines.length ? lines.join("\n") : null,
     }).eq("id", lead.id);
     setSaving(false);
@@ -782,6 +693,8 @@ function LeadDetailDialog({ lead, labels, open, onOpenChange }: { lead: Lead; la
     qc.invalidateQueries({ queryKey: ["leads"] });
     setEditing(false);
   }
+
+
 
   async function remove() {
     if (!confirm("Excluir este lead?")) return;
@@ -814,22 +727,12 @@ function LeadDetailDialog({ lead, labels, open, onOpenChange }: { lead: Lead; la
                 <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label className="text-xs">Status</Label>
-                <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as Lead["status"] })}
-                  className="w-full h-9 rounded-md border border-input bg-background px-2 text-sm">
-                  {COLUMNS.map((c) => <option key={c.key} value={c.key}>{c.title}</option>)}
-                </select>
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs">Etiqueta</Label>
-                <select value={form.label_id} onChange={(e) => setForm({ ...form, label_id: e.target.value })}
-                  className="w-full h-9 rounded-md border border-input bg-background px-2 text-sm">
-                  <option value="">Sem etiqueta</option>
-                  {labels.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
-                </select>
-              </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Status</Label>
+              <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as Lead["status"] })}
+                className="w-full h-9 rounded-md border border-input bg-background px-2 text-sm">
+                {COLUMNS.map((c) => <option key={c.key} value={c.key}>{c.title}</option>)}
+              </select>
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">Empresa</Label>
@@ -861,12 +764,6 @@ function LeadDetailDialog({ lead, labels, open, onOpenChange }: { lead: Lead; la
           <div className="space-y-4 text-sm">
             <div className="flex flex-wrap gap-2">
               <span className="text-xs px-2.5 py-1 rounded-full bg-muted">{statusTitle}</span>
-              {label && (
-                <span className="text-xs px-2.5 py-1 rounded-full inline-flex items-center gap-1"
-                  style={{ backgroundColor: label.color + "22", color: label.color }}>
-                  <Tag className="size-3" />{label.name}
-                </span>
-              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
