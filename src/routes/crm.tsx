@@ -746,26 +746,24 @@ function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: bool
         {editing ? (
           <div className="space-y-3 text-sm">
             <div className="space-y-1.5">
-              <Label className="text-xs">Nome *</Label>
-              <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              <Label className="text-xs">Nome</Label>
+              <Input value={form.name} disabled />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label className="text-xs">WhatsApp</Label>
-                <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+                <Input value={form.phone} disabled />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs">Email</Label>
-                <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+                <Input type="email" value={form.email} disabled />
               </div>
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">Status</Label>
-              <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as Lead["status"] })}
-                className="w-full h-9 rounded-md border border-input bg-background px-2 text-sm">
-                {COLUMNS.map((c) => <option key={c.key} value={c.key}>{c.title}</option>)}
-              </select>
+              <Input value={COLUMNS.find((c) => c.key === form.status)?.title ?? form.status} disabled />
             </div>
+
             <div className="space-y-1.5">
               <Label className="text-xs">Empresa</Label>
               <Input value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} />
