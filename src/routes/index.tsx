@@ -175,10 +175,10 @@ function HeroDashboard() {
 
 function Hero() {
   const benefits = [
-    "Leads qualificados todos os dias",
-    "CPA até 60% menor",
-    "Atendimento 24/7 com IA",
-    "Previsibilidade real de escala",
+    "De 5 a 30 leads qualificados por dia",
+    "CPA até 60% menor em 60 dias",
+    "Atendimento 24/7 com IA que vende por você",
+    "Previsibilidade real — sem depender de indicação",
   ];
   const stagger = {
     hidden: {},
@@ -230,7 +230,7 @@ function Hero() {
               variants={fadeUp}
               className="mt-7 max-w-xl text-base leading-relaxed text-white/65 md:text-lg"
             >
-              Sistema previsível de aquisição com <span className="text-white">Meta Ads</span>, <span className="text-white">Google Ads</span>, landing pages otimizadas e automações com IA — tudo conectado para você vender mais sem depender de sorte.
+              Cansado de gastar com anúncio e não ver retorno? A gente monta o seu sistema de aquisição com <span className="text-white">Meta Ads</span>, <span className="text-white">Google Ads</span>, landing page de alta conversão e IA que qualifica seus leads — para você vender todo dia, sem depender de sorte.
             </motion.p>
 
             <motion.ul variants={fadeUp} className="mt-7 grid gap-2.5 sm:grid-cols-2">
@@ -251,7 +251,7 @@ function Hero() {
                 aria-label="Quero minha análise gratuita de tráfego"
               >
                 <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-                Quero Minha Análise Gratuita
+                Quero meu diagnóstico gratuito
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </a>
               <a
@@ -259,7 +259,7 @@ function Hero() {
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-7 py-4 text-sm font-semibold text-white backdrop-blur-xl transition-all hover:border-white/25 hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
               >
                 <MessageSquare className="h-4 w-4 text-emerald-400" />
-                Falar no WhatsApp
+                Falar com especialista no WhatsApp
               </a>
             </motion.div>
 
@@ -282,7 +282,7 @@ function Hero() {
                   <span className="ml-1 font-semibold text-white">4.9/5</span>
                 </div>
                 <div className="text-xs text-white/55">
-                  +150 empresas · R$ 2M+ investidos com lucro
+                  +150 empresas atendidas · R$ 2,1 mi investidos com lucro
                 </div>
               </div>
             </motion.div>
@@ -359,9 +359,9 @@ function ResultsSection() {
 
 function ProblemSection() {
   const cards = [
-    { Icon: Target, title: "Tráfego sem conversão", description: "Muitos cliques, poucos leads qualificados." },
-    { Icon: Users, title: "Leads desqualificados", description: "Pessoas que não têm orçamento ou interesse real." },
-    { Icon: TrendingUp, title: "Dependência de indicação", description: "Crescimento instável e imprevisível." },
+    { Icon: Target, title: "Anúncio que não vende", description: "Você paga pelo clique, mas o lead some no meio do caminho — e o boleto do tráfego chega igual." },
+    { Icon: Users, title: "Leads que enrolam", description: "Curioso que pede preço, some no WhatsApp e nunca fecha. Seu time perde tempo, você perde dinheiro." },
+    { Icon: TrendingUp, title: "Mês bom, mês ruim", description: "Sem previsibilidade, planejar contratação, estoque ou caixa vira aposta. Crescer assim cansa." },
   ];
   return (
     <section className="bg-[#080808] py-24">
@@ -399,10 +399,10 @@ function ProblemSection() {
 
 function SolutionSection() {
   const steps = [
-    { step: 1, title: "Diagnóstico Completo", desc: "Análise profunda da sua atual estrutura", Icon: Search },
-    { step: 2, title: "Estratégia Personalizada", desc: "Montamos a campanha e LP otimizada", Icon: Brain },
-    { step: 3, title: "Implementação Rápida", desc: "Lançamos tudo em poucos dias", Icon: Rocket },
-    { step: 4, title: "Otimização + Escala", desc: "Acompanhamento diário e crescimento", Icon: TrendingUp },
+    { step: 1, title: "Diagnóstico em 24h", desc: "Auditamos suas campanhas, LP e funil — e mostramos onde está vazando dinheiro.", Icon: Search },
+    { step: 2, title: "Estratégia sob medida", desc: "Criamos oferta, criativos e landing page validados para o seu nicho.", Icon: Brain },
+    { step: 3, title: "Lançamento em até 7 dias", desc: "Subimos campanhas, integramos CRM e IA e começamos a captar leads.", Icon: Rocket },
+    { step: 4, title: "Otimização e escala", desc: "Acompanhamento diário, relatórios semanais e crescimento composto.", Icon: TrendingUp },
   ];
   return (
     <section id="metodo" className="relative py-24">
@@ -444,12 +444,12 @@ function SolutionSection() {
 
 function ServicesSection() {
   const cards = [
-    { Icon: Target, service: "Meta Ads", desc: "Campanhas altamente otimizadas" },
-    { Icon: Search, service: "Google Ads", desc: "Busca e Performance Max" },
-    { Icon: LayoutTemplate, service: "Landing Pages", desc: "Conversão máxima com Lovable" },
-    { Icon: Bot, service: "Inteligência Artificial", desc: "Qualificação e automação de leads" },
-    { Icon: Database, service: "CRM + Automação", desc: "Follow-up automático" },
-    { Icon: BarChart3, service: "Analytics", desc: "Relatórios semanais claros" },
+    { Icon: Target, service: "Meta Ads", desc: "Campanhas que enchem seu WhatsApp de leads quentes." },
+    { Icon: Search, service: "Google Ads", desc: "Apareça na hora em que o cliente já quer comprar." },
+    { Icon: LayoutTemplate, service: "Landing Pages", desc: "Páginas que convertem 2 a 5x mais que o seu site atual." },
+    { Icon: Bot, service: "IA de qualificação", desc: "Atende, qualifica e agenda 24/7 — sem perder lead às 22h." },
+    { Icon: Database, service: "CRM + Automação", desc: "Follow-up automático que recupera quem ia escapar." },
+    { Icon: BarChart3, service: "Relatórios claros", desc: "Você vê o ROI da sua verba toda semana, sem achismo." },
   ];
   return (
     <section id="servicos" className="bg-[#080808] py-24">
@@ -640,7 +640,7 @@ function AboutSection() {
               Especialista em <span className="bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] bg-clip-text text-transparent">Performance</span>
             </h2>
             <p className="mt-6 text-white/70">
-              Com mais de 5 anos ajudando empresas a escalarem com tráfego pago, já gerenciamos mais de R$ 2 milhões em anúncios e entregamos resultados consistentes.
+              Há mais de 5 anos a gente só faz uma coisa: transformar verba de tráfego em cliente pagante. Já passaram pelas nossas mãos +R$ 2,1 milhões em mídia e mais de 150 operações — de clínicas locais a SaaS B2B.
             </p>
             <div className="mt-8 grid grid-cols-3 gap-3">
               {[
@@ -664,10 +664,10 @@ function AboutSection() {
 function OfferSection() {
   const [sent, setSent] = useState(false);
   const items = [
-    "Diagnóstico completo do seu tráfego atual",
-    "Auditoria das campanhas e landing pages",
-    "Oportunidades de melhoria identificadas",
-    "Plano de ação personalizado",
+    "Auditoria gratuita das suas campanhas e LP atuais",
+    "Onde sua verba está vazando (em R$) e como tampar",
+    "Projeção realista de leads e CPA para o seu nicho",
+    "Plano de ação de 30 dias — leva mesmo se não fechar",
   ];
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -687,7 +687,7 @@ function OfferSection() {
               <Sparkles className="h-3 w-3" /> Diagnóstico Gratuito
             </div>
             <h2 className="mt-4 text-3xl font-bold leading-tight tracking-tight md:text-4xl">
-              Receba uma Análise Gratuita da Sua <span className="bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] bg-clip-text text-transparent">Performance</span>
+              Descubra em 24h quanto a sua verba pode <span className="bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] bg-clip-text text-transparent">render de verdade</span>
             </h2>
             <ul className="mt-6 space-y-3">
               {items.map(i => (
@@ -719,7 +719,7 @@ function OfferSection() {
                 <SelectField label="Faturamento mensal" options={["Até R$10k", "R$10k–30k", "R$30k–60k", "R$60k–120k", "Acima de R$120k"]} />
                 <SelectField label="Investimento diário em tráfego" options={["Não invisto ainda", "Até R$50/dia", "R$51–100/dia", "Acima de R$100/dia"]} />
                 <button type="submit" className="group mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#4F7CFF]/30 transition-all hover:scale-[1.01]">
-                  Quero Minha Análise Gratuita
+                  Quero meu diagnóstico gratuito
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </button>
               </form>
@@ -806,9 +806,9 @@ function FinalCta() {
           <br />
           <span className="bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] bg-clip-text text-transparent">clientes qualificados?</span>
         </motion.h2>
-        <p className="mt-5 text-lg text-white/70">Receba seu diagnóstico e plano personalizado em até 24h.</p>
+        <p className="mt-5 text-lg text-white/70">Diagnóstico 100% gratuito, sem compromisso. Resposta em até 24h — e o plano é seu mesmo se a gente não fechar.</p>
         <a href="#diagnostico" className="mt-8 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] px-7 py-4 text-sm font-semibold text-white shadow-lg shadow-[#4F7CFF]/40 transition-all hover:scale-[1.02]">
-          Agendar Diagnóstico Agora
+          Quero meu diagnóstico agora
           <ArrowRight className="h-4 w-4" />
         </a>
       </div>
