@@ -510,32 +510,85 @@ function NewLeadDialog() {
   );
 }
 
-function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: boolean; onOpenChange: (o: boolean) => void }) {
-  const qc = useQueryClient();
-  const parsed: Record<string, string> = {};
-  (lead.message ?? "").split("\n").forEach((line) => {
+type Note = { id: string; text: string; at: string; editedAt?: string };
+
+function parseMessage(message: string | null): { fields: Record<string, string>; notes: Note[] } {
+  const fields: Record<string, string> = {};
+  let notes: Note[] = [];
+  (message ?? "").split("\n").forEach((line) => {
     const idx = line.indexOf(":");
-    if (idx > 0) {
-      const k = line.slice(0, idx).trim();
-      const v = line.slice(idx + 1).trim();
-      if (k && v) parsed[k] = v;
+    if (idx <= 0) return;
+    const k = line.slice(0, idx).trim();
+    const v = line.slice(idx + 1).trim();
+    if (!k || !v) return;
+    if (k === "Notas") {
+      try {
+        const arr = JSON.parse(v);
+        if (Array.isArray(arr)) notes = arr;
+      } catch { /* ignore */ }
+    } else {
+      fields[k] = v;
     }
   });
-  const noteKey = "Anotação" in parsed ? "Anotação" : ("Anotacao" in parsed ? "Anotacao" : "Anotação");
-  const diagnostic = Object.fromEntries(Object.entries(parsed).filter(([k]) => k !== "Anotação" && k !== "Anotacao"));
-  const [noteDraft, setNoteDraft] = useState(parsed[noteKey] ?? "");
-  const [savingNote, setSavingNote] = useState(false);
-  useEffect(() => { setNoteDraft(parsed[noteKey] ?? ""); /* eslint-disable-next-line */ }, [lead.id, lead.message]);
-  async function saveNote() {
-    setSavingNote(true);
-    const others = Object.entries(parsed).filter(([k]) => k !== "Anotação" && k !== "Anotacao");
-    const lines = others.map(([k, v]) => `${k}: ${v}`);
-    if (noteDraft.trim()) lines.push(`Anotação: ${noteDraft.trim()}`);
-    const { error } = await supabase.from("leads").update({ message: lines.length ? lines.join("\n") : null }).eq("id", lead.id);
-    setSavingNote(false);
-    if (error) { alert("Erro ao salvar anotação: " + error.message); return; }
-    qc.invalidateQueries({ queryKey: ["leads"] });
+  // Backward-compat: migrate single "Anotação" into the notes list
+  const legacy = fields["Anotação"] ?? fields["Anotacao"];
+  if (legacy && notes.length === 0) {
+    notes = [{ id: crypto.randomUUID(), text: legacy, at: new Date().toISOString() }];
   }
+  delete fields["Anotação"];
+  delete fields["Anotacao"];
+  return { fields, notes };
+}
+
+function serializeMessage(fields: Record<string, string>, notes: Note[]): string | null {
+  const lines = Object.entries(fields).filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`);
+  if (notes.length) lines.push(`Notas: ${JSON.stringify(notes)}`);
+  return lines.length ? lines.join("\n") : null;
+}
+
+function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: boolean; onOpenChange: (o: boolean) => void }) {
+  const qc = useQueryClient();
+  const { fields: diagnostic, notes } = useMemo(() => parseMessage(lead.message), [lead.message]);
+
+  const [noteDraft, setNoteDraft] = useState("");
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [savingNote, setSavingNote] = useState(false);
+
+  async function persistNotes(nextNotes: Note[]) {
+    setSavingNote(true);
+    const { error } = await supabase.from("leads").update({
+      message: serializeMessage(diagnostic, nextNotes),
+    }).eq("id", lead.id);
+    setSavingNote(false);
+    if (error) { alert("Erro ao salvar anotação: " + error.message); return false; }
+    qc.invalidateQueries({ queryKey: ["leads"] });
+    return true;
+  }
+
+  async function addOrUpdateNote() {
+    const text = noteDraft.trim();
+    if (!text) return;
+    let next: Note[];
+    if (editingNoteId) {
+      next = notes.map((n) => n.id === editingNoteId ? { ...n, text, editedAt: new Date().toISOString() } : n);
+    } else {
+      next = [...notes, { id: crypto.randomUUID(), text, at: new Date().toISOString() }];
+    }
+    const ok = await persistNotes(next);
+    if (ok) { setNoteDraft(""); setEditingNoteId(null); }
+  }
+
+  async function deleteNote(id: string) {
+    if (!confirm("Excluir esta anotação?")) return;
+    await persistNotes(notes.filter((n) => n.id !== id));
+    if (editingNoteId === id) { setEditingNoteId(null); setNoteDraft(""); }
+  }
+
+  function startEditNote(n: Note) {
+    setEditingNoteId(n.id);
+    setNoteDraft(n.text);
+  }
+
 
   const utms = [
     ["utm_source", lead.utm_source],
@@ -553,55 +606,51 @@ function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: bool
     email: lead.email ?? "",
     phone: lead.phone ?? "",
     status: lead.status,
-    company: parsed["Empresa"] ?? "",
-    faturamento: parsed["Faturamento mensal"] ?? parsed["Faturamento"] ?? "",
-    investimento: parsed["Investimento"] ?? "",
-    note: parsed["Anotação"] ?? parsed["Anotacao"] ?? "",
+    company: diagnostic["Empresa"] ?? "",
+    faturamento: diagnostic["Faturamento mensal"] ?? diagnostic["Faturamento"] ?? "",
+    investimento: diagnostic["Investimento"] ?? "",
   });
 
   useEffect(() => {
     setEditing(false);
-    const p: Record<string, string> = {};
-    (lead.message ?? "").split("\n").forEach((line) => {
-      const i = line.indexOf(":");
-      if (i > 0) {
-        const k = line.slice(0, i).trim();
-        const v = line.slice(i + 1).trim();
-        if (k && v) p[k] = v;
-      }
-    });
     setForm({
       name: lead.name,
       email: lead.email ?? "",
       phone: lead.phone ?? "",
       status: lead.status,
-      company: p["Empresa"] ?? "",
-      faturamento: p["Faturamento mensal"] ?? p["Faturamento"] ?? "",
-      investimento: p["Investimento"] ?? "",
-      note: p["Anotação"] ?? p["Anotacao"] ?? "",
+      company: diagnostic["Empresa"] ?? "",
+      faturamento: diagnostic["Faturamento mensal"] ?? diagnostic["Faturamento"] ?? "",
+      investimento: diagnostic["Investimento"] ?? "",
     });
-  }, [lead]);
+    setNoteDraft("");
+    setEditingNoteId(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lead.id]);
 
   async function saveEdit() {
     if (!form.name.trim()) return;
     setSaving(true);
-    const lines: string[] = [];
-    if (form.company.trim()) lines.push(`Empresa: ${form.company.trim()}`);
-    if (form.faturamento.trim()) lines.push(`Faturamento mensal: ${form.faturamento.trim()}`);
-    if (form.investimento.trim()) lines.push(`Investimento: ${form.investimento.trim()}`);
-    if (form.note.trim()) lines.push(`Anotação: ${form.note.trim()}`);
+    const fields: Record<string, string> = {};
+    if (form.company.trim()) fields["Empresa"] = form.company.trim();
+    if (form.faturamento.trim()) fields["Faturamento mensal"] = form.faturamento.trim();
+    if (form.investimento.trim()) fields["Investimento"] = form.investimento.trim();
+    // Preserve any other diagnostic keys we don't edit explicitly
+    for (const [k, v] of Object.entries(diagnostic)) {
+      if (!["Empresa", "Faturamento mensal", "Faturamento", "Investimento"].includes(k)) fields[k] = v;
+    }
     const { error } = await supabase.from("leads").update({
       name: form.name.trim(),
       email: form.email.trim() || null,
       phone: form.phone.trim() || null,
       status: form.status,
-      message: lines.length ? lines.join("\n") : null,
+      message: serializeMessage(fields, notes),
     }).eq("id", lead.id);
     setSaving(false);
     if (error) { alert("Erro ao salvar: " + error.message); return; }
     qc.invalidateQueries({ queryKey: ["leads"] });
     setEditing(false);
   }
+
 
 
 
@@ -657,11 +706,7 @@ function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: bool
                 <Input value={form.investimento} onChange={(e) => setForm({ ...form, investimento: e.target.value })} />
               </div>
             </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs">Anotação</Label>
-              <textarea value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} rows={3}
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-            </div>
+
             <DialogFooter className="gap-2">
               <Button variant="ghost" onClick={() => setEditing(false)}>Cancelar</Button>
               <Button onClick={saveEdit} disabled={saving || !form.name.trim()}>
@@ -692,21 +737,63 @@ function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: bool
               </div>
             )}
 
-            <div className="rounded-lg border border-border p-3 space-y-2">
+            <div className="rounded-lg border border-border p-3 space-y-3 bg-[#ece5dd] dark:bg-muted/40">
               <h4 className="text-xs font-semibold tracking-wider text-muted-foreground">ANOTAÇÕES</h4>
-              <textarea
-                value={noteDraft}
-                onChange={(e) => setNoteDraft(e.target.value)}
-                rows={3}
-                placeholder="Adicione observações internas sobre este lead..."
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              />
-              <div className="flex justify-end">
-                <Button size="sm" onClick={saveNote} disabled={savingNote || noteDraft === (parsed[noteKey] ?? "")}>
-                  {savingNote ? "Salvando..." : "Salvar anotação"}
+              <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                {notes.length === 0 ? (
+                  <p className="text-xs text-muted-foreground italic">Nenhuma anotação ainda.</p>
+                ) : (
+                  notes.map((n) => (
+                    <div key={n.id} className="flex justify-end">
+                      <div className="group relative max-w-[85%] rounded-lg rounded-tr-sm bg-[#dcf8c6] dark:bg-emerald-900/40 px-3 py-2 shadow-sm">
+                        <p className="text-sm whitespace-pre-wrap break-words text-foreground">{n.text}</p>
+                        <div className="flex items-center justify-end gap-2 mt-1 text-[10px] text-muted-foreground">
+                          {n.editedAt && <span className="italic">editado</span>}
+                          <span>{new Date(n.at).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</span>
+                        </div>
+                        <div className="absolute -top-2 -left-2 hidden group-hover:flex gap-1">
+                          <button
+                            type="button"
+                            onClick={() => startEditNote(n)}
+                            className="size-6 rounded-full bg-background border border-border text-foreground flex items-center justify-center hover:bg-muted"
+                            title="Editar"
+                          >
+                            <Pencil className="size-3" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => deleteNote(n.id)}
+                            className="size-6 rounded-full bg-background border border-border text-destructive flex items-center justify-center hover:bg-muted"
+                            title="Excluir"
+                          >
+                            <Trash2 className="size-3" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+              <div className="flex items-end gap-2 pt-1">
+                <textarea
+                  value={noteDraft}
+                  onChange={(e) => setNoteDraft(e.target.value)}
+                  rows={2}
+                  placeholder={editingNoteId ? "Editar anotação..." : "Escreva uma anotação..."}
+                  onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) addOrUpdateNote(); }}
+                  className="flex-1 rounded-2xl border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                />
+                <Button size="sm" onClick={addOrUpdateNote} disabled={savingNote || !noteDraft.trim()}>
+                  {savingNote ? "..." : editingNoteId ? "Atualizar" : "Enviar"}
                 </Button>
+                {editingNoteId && (
+                  <Button size="sm" variant="ghost" onClick={() => { setEditingNoteId(null); setNoteDraft(""); }}>
+                    Cancelar
+                  </Button>
+                )}
               </div>
             </div>
+
 
 
             {utms.length > 0 && (
