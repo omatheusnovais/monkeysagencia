@@ -9,7 +9,14 @@ import {
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription,
+} from "@/components/ui/dialog";
 import monkeysLogo from "@/assets/monkeys-logo.png.asset.json";
+
+const WHATSAPP_URL = `https://wa.me/5562993519901?text=${encodeURIComponent("Olá vim pela Landing Page e gostaria de agendar uma reunião!")}`;
+const INSTAGRAM_AGENCY = "https://www.instagram.com/monkeys.agencia";
+const INSTAGRAM_PERSONAL = "https://www.instagram.com/omatheusnovais";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -254,7 +261,9 @@ function Hero() {
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </a>
               <a
-                href="https://wa.me/SEUNUMERO"
+                href={WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-7 py-4 text-sm font-semibold text-white backdrop-blur-xl transition-all hover:border-white/25 hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
               >
                 <MessageSquare className="h-4 w-4 text-emerald-400" />
