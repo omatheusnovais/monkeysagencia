@@ -265,11 +265,13 @@ function Hero() {
             {/* Social proof */}
             <motion.div variants={fadeUp} className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
               <div className="flex items-center -space-x-2">
-                {["#4F7CFF", "#8B5CF6", "#22d3ee", "#f472b6"].map((c) => (
-                  <div
-                    key={c}
-                    className="h-9 w-9 rounded-full border-2 border-black"
-                    style={{ background: `linear-gradient(135deg, ${c}, #1a1a1a)` }}
+                {[12, 32, 47, 65].map((id) => (
+                  <img
+                    key={id}
+                    src={`https://i.pravatar.cc/80?img=${id}`}
+                    alt="Cliente Monkeys Agência"
+                    loading="lazy"
+                    className="h-9 w-9 rounded-full border-2 border-black object-cover"
                   />
                 ))}
               </div>
@@ -295,19 +297,26 @@ function Hero() {
 }
 
 function LogosSection() {
-  const logos = ["NEXUS", "QUANTUM", "VERTEX", "PRISMA", "ORBITA", "AXIS"];
-  const loop = [...logos, ...logos];
+  const stats = [
+    "+R$ 2,1 mi investidos com lucro",
+    "+150 empresas atendidas",
+    "+430% de aumento médio em leads",
+    "-37% de redução média no CPA",
+    "ROAS médio de 6,8x",
+    "+8 anos de operação",
+  ];
+  const loop = [...stats, ...stats];
   return (
     <section className="border-y border-white/5 bg-black/40 py-12">
       <div className="mx-auto max-w-7xl px-6">
         <p className="text-center text-xs uppercase tracking-[0.2em] text-white/40">
-          Empresas que confiam no nosso método
+          Resultados reais que entregamos
         </p>
         <div className="relative mt-8 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
-          <div className="flex w-max gap-16 animate-marquee">
-            {loop.map((l, i) => (
-              <div key={`${l}-${i}`} className="shrink-0 text-xl font-black tracking-widest text-white/30 transition-colors hover:text-white/60">
-                {l}
+          <div className="flex w-max gap-12 animate-marquee">
+            {loop.map((s, i) => (
+              <div key={`${s}-${i}`} className="shrink-0 text-sm font-semibold tracking-wide text-white/50 transition-colors hover:text-white/80">
+                {s}
               </div>
             ))}
           </div>
