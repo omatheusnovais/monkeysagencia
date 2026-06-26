@@ -645,11 +645,11 @@ function AboutSection() {
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}>
             <div className="relative">
               <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-[#4F7CFF]/30 to-[#8B5CF6]/30 blur-3xl" />
-              <div className="relative aspect-square w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/10 to-transparent backdrop-blur">
+              <div className="relative h-full w-full overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/10 to-transparent backdrop-blur">
                 <img
                   src={matheusPhoto.url}
                   alt="Matheus Novais palestrando"
-                  className="h-full w-full scale-[1.7] object-cover object-[58%_28%]"
+                  className="h-full w-full object-contain"
                 />
 
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#080808]/60 via-transparent to-transparent" />
