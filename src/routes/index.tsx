@@ -600,7 +600,7 @@ function MethodFlowSection() {
   const steps = [
     { Icon: Target, label: "Meta/Google Ads" },
     { Icon: LayoutTemplate, label: "Landing Page" },
-    { Icon: Database, label: "CRM + IA" },
+    { Icon: Database, label: "CRM" },
     { Icon: Zap, label: "Automação" },
     { Icon: TrendingUp, label: "Vendas" },
   ];
