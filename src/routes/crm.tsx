@@ -51,7 +51,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 
-export const Route = createFileRoute("/admin/crm")({
+export const Route = createFileRoute("/crm")({
   component: CrmPage,
   head: () => ({ meta: [{ title: "CRM · Admin" }] }),
 });
@@ -90,11 +90,11 @@ function CrmPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (!data.session) navigate({ to: "/admin/login" });
+      if (!data.session) navigate({ to: "/login" });
       else setReady(true);
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      if (!session) navigate({ to: "/admin/login" });
+      if (!session) navigate({ to: "/login" });
     });
     return () => sub.subscription.unsubscribe();
   }, []);
@@ -172,7 +172,7 @@ function CrmPage() {
 
   async function logout() {
     await supabase.auth.signOut();
-    navigate({ to: "/admin/login" });
+    navigate({ to: "/login" });
   }
 
   if (!ready) return <div className="min-h-screen bg-background" />;
