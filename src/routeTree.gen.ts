@@ -9,16 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminCrmRouteImport } from './routes/admin.crm'
 
-const ContatoRoute = ContatoRouteImport.update({
-  id: '/contato',
-  path: '/contato',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,47 +31,36 @@ const AdminCrmRoute = AdminCrmRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/contato': typeof ContatoRoute
   '/admin/crm': typeof AdminCrmRoute
   '/admin/login': typeof AdminLoginRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/contato': typeof ContatoRoute
   '/admin/crm': typeof AdminCrmRoute
   '/admin/login': typeof AdminLoginRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/contato': typeof ContatoRoute
   '/admin/crm': typeof AdminCrmRoute
   '/admin/login': typeof AdminLoginRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/contato' | '/admin/crm' | '/admin/login'
+  fullPaths: '/' | '/admin/crm' | '/admin/login'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/contato' | '/admin/crm' | '/admin/login'
-  id: '__root__' | '/' | '/contato' | '/admin/crm' | '/admin/login'
+  to: '/' | '/admin/crm' | '/admin/login'
+  id: '__root__' | '/' | '/admin/crm' | '/admin/login'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ContatoRoute: typeof ContatoRoute
   AdminCrmRoute: typeof AdminCrmRoute
   AdminLoginRoute: typeof AdminLoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/contato': {
-      id: '/contato'
-      path: '/contato'
-      fullPath: '/contato'
-      preLoaderRoute: typeof ContatoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -104,7 +87,6 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ContatoRoute: ContatoRoute,
   AdminCrmRoute: AdminCrmRoute,
   AdminLoginRoute: AdminLoginRoute,
 }
