@@ -115,7 +115,7 @@ function CrmPage() {
   const [ready, setReady] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [view, setView] = useState<"kanban" | "lista" | "stats">("kanban");
+  const [view, setView] = useState<"kanban" | "stats">("kanban");
   const { theme, toggle } = useTheme();
 
   useEffect(() => {
@@ -304,8 +304,7 @@ function CrmPage() {
           <div className="flex items-center justify-between gap-3 rounded-2xl bg-card border border-border px-3 py-2">
             <div className="flex items-center gap-1">
               <TabBtn active={view === "kanban"} onClick={() => setView("kanban")} icon={<LayoutGrid className="size-4" />} label="KANBAN" />
-              <TabBtn active={view === "lista"} onClick={() => setView("lista")} icon={<List className="size-4" />} label="LISTA" />
-              <TabBtn active={view === "stats"} onClick={() => setView("stats")} icon={<PieChart className="size-4" />} label="ESTATÍSTICAS" />
+              <TabBtn active={view === "stats"} onClick={() => setView("stats")} icon={<Newspaper className="size-4" />} label="NOTÍCIAS" />
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" className="rounded-full"><Filter className="size-4 mr-1" /> FILTRAR</Button>
@@ -333,37 +332,8 @@ function CrmPage() {
             </DndContext>
           )}
 
-          {view === "lista" && (
-            <div className="rounded-2xl bg-card border border-border overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="bg-muted/50">
-                  <tr className="text-left text-xs uppercase text-muted-foreground">
-                    <th className="px-4 py-3">Nome</th>
-                    <th className="px-4 py-3">Empresa / Email</th>
-                    <th className="px-4 py-3">Telefone</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Criado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((l) => (
-                    <tr key={l.id} className="border-t border-border">
-                      <td className="px-4 py-3 font-semibold">{l.name}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{l.email ?? "—"}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{l.phone ?? "—"}</td>
-                      <td className="px-4 py-3">{COLUMNS.find((c) => c.key === l.status)?.title}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{new Date(l.created_at).toLocaleDateString("pt-BR")}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
           {view === "stats" && (
-            <div className="rounded-2xl bg-card border border-border p-8 text-center text-muted-foreground">
-              Estatísticas em breve. Total de leads: <b className="text-foreground">{totals.total}</b>
-            </div>
+            <NewsPanel />
           )}
         </main>
       </div>
@@ -469,6 +439,48 @@ function Column({ col, leads, labels }: { col: { key: Status; title: string; dot
           leads.map((l) => <DraggableCard key={l.id} lead={l} labels={labels} />)
         )}
       </div>
+    </div>
+  );
+}
+
+function NewsPanel() {
+  const fetchNews = useServerFn(getMarketingNews);
+  const newsQ = useQuery({
+    queryKey: ["marketing-news"],
+    queryFn: () => fetchNews({}),
+    staleTime: 1000 * 60 * 60 * 6,
+  });
+  const items = newsQ.data?.items ?? [];
+  return (
+    <div className="rounded-2xl bg-card border border-border p-6">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2 text-[11px] font-semibold tracking-wider text-muted-foreground">
+          <Newspaper className="size-3.5" /> NOTÍCIAS DE MARKETING & TRÁFEGO
+        </div>
+        {newsQ.isFetching && <RefreshCw className="size-3 animate-spin text-muted-foreground" />}
+      </div>
+      {newsQ.isLoading ? (
+        <div className="space-y-2">
+          {[0, 1, 2, 3, 4].map((i) => <div key={i} className="h-4 rounded bg-muted animate-pulse" />)}
+        </div>
+      ) : items.length === 0 ? (
+        <p className="text-sm text-muted-foreground">Sem notícias disponíveis no momento.</p>
+      ) : (
+        <ul className="space-y-3">
+          {items.map((n, i) => (
+            <li key={i}>
+              <a href={n.link} target="_blank" rel="noreferrer"
+                className="group flex items-start gap-2 text-sm hover:text-primary transition-colors">
+                <ExternalLink className="size-3.5 mt-0.5 shrink-0 text-muted-foreground group-hover:text-primary" />
+                <span className="flex-1">
+                  <span className="line-clamp-2">{n.title}</span>
+                  <span className="text-[11px] text-muted-foreground">{n.source}</span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
