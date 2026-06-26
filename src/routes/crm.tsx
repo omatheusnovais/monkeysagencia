@@ -834,45 +834,30 @@ function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: bool
                   );
                 })()}
 
-                <div className="rounded-lg border border-border p-3 space-y-2">
-                  <h4 className="text-xs font-semibold tracking-wider text-muted-foreground">CONTRATO</h4>
-                  <div className="flex items-center justify-between gap-3 text-sm">
-                    <span className="text-muted-foreground">Valor</span>
-                    <Input
-                      defaultValue={valorContrato}
-                      placeholder="R$ 0,00"
-                      onBlur={async (e) => {
-                        const v = e.target.value.trim();
-                        if (v === valorContrato) return;
-                        const next = { ...diagnostic };
-                        if (v) next["Valor do contrato"] = v; else delete next["Valor do contrato"];
-                        await supabase.from("leads").update({ message: serializeMessage(next, notes) }).eq("id", lead.id);
-                        qc.invalidateQueries({ queryKey: ["leads"] });
-                      }}
-                      className="h-8 w-36 text-right"
-                    />
+                {(valorContrato || inicioContrato || vencimentoContrato) && (
+                  <div className="rounded-lg border border-border p-3 space-y-2">
+                    <h4 className="text-xs font-semibold tracking-wider text-muted-foreground">CONTRATO</h4>
+                    {valorContrato && (
+                      <div className="flex justify-between gap-3 text-sm">
+                        <span className="text-muted-foreground">Valor</span>
+                        <span className="font-medium text-right">{valorContrato}</span>
+                      </div>
+                    )}
+                    {inicioContrato && (
+                      <div className="flex justify-between gap-3 text-sm">
+                        <span className="text-muted-foreground">Início</span>
+                        <span className="font-medium text-right">{fmtDate(inicioContrato)}</span>
+                      </div>
+                    )}
+                    {vencimentoContrato && (
+                      <div className="flex justify-between gap-3 text-sm">
+                        <span className="text-muted-foreground">Vencimento (90 dias)</span>
+                        <span className="font-medium text-right">{fmtDate(vencimentoContrato)}</span>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center justify-between gap-3 text-sm">
-                    <span className="text-muted-foreground">Início</span>
-                    <Input
-                      type="date"
-                      defaultValue={inicioContrato}
-                      onBlur={async (e) => {
-                        const v = e.target.value;
-                        if (v === inicioContrato) return;
-                        const next = { ...diagnostic };
-                        if (v) next["Início do contrato"] = v; else delete next["Início do contrato"];
-                        await supabase.from("leads").update({ message: serializeMessage(next, notes) }).eq("id", lead.id);
-                        qc.invalidateQueries({ queryKey: ["leads"] });
-                      }}
-                      className="h-8 w-44"
-                    />
-                  </div>
-                  <div className="flex justify-between gap-3 text-sm">
-                    <span className="text-muted-foreground">Vencimento (90 dias)</span>
-                    <span className="font-medium text-right">{vencimentoContrato ? fmtDate(vencimentoContrato) : "—"}</span>
-                  </div>
-                </div>
+                )}
+
 
                 {utms.length > 0 && (
                   <div className="rounded-lg border border-border p-3 space-y-1.5">
