@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,7 +16,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -26,13 +25,6 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,7 +40,17 @@ import {
   Mail,
   Phone,
   MoreVertical,
-  ExternalLink,
+  LayoutGrid,
+  PieChart,
+  ArrowLeft,
+  Search,
+  Filter,
+  RefreshCw,
+  List,
+  Bell,
+  Sun,
+  Moon,
+  Calendar,
 } from "lucide-react";
 
 export const Route = createFileRoute("/crm")({
@@ -75,18 +77,35 @@ type Lead = {
 };
 type LabelRow = { id: string; name: string; color: string };
 
-const COLUMNS: { key: Status; title: string; accent: string }[] = [
-  { key: "novos", title: "Novos", accent: "from-blue-500/20 to-blue-500/0" },
-  { key: "em_contato", title: "Em contato", accent: "from-amber-500/20 to-amber-500/0" },
-  { key: "contrato_fechado", title: "Contrato fechado", accent: "from-emerald-500/20 to-emerald-500/0" },
-  { key: "desqualificado", title: "Desqualificado", accent: "from-rose-500/20 to-rose-500/0" },
+const COLUMNS: { key: Status; title: string; dot: string }[] = [
+  { key: "novos", title: "NOVO", dot: "#3b82f6" },
+  { key: "em_contato", title: "EM CONTATO", dot: "#f59e0b" },
+  { key: "contrato_fechado", title: "GANHO", dot: "#10b981" },
+  { key: "desqualificado", title: "DESQUALIFICADO", dot: "#64748b" },
 ];
+
+function useTheme() {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  useEffect(() => {
+    const saved = (localStorage.getItem("crm-theme") as "light" | "dark") || "light";
+    setTheme(saved);
+  }, []);
+  useEffect(() => {
+    document.documentElement.classList.toggle("theme-light", theme === "light");
+    localStorage.setItem("crm-theme", theme);
+    return () => { document.documentElement.classList.remove("theme-light"); };
+  }, [theme]);
+  return { theme, toggle: () => setTheme((t) => (t === "light" ? "dark" : "light")) };
+}
 
 function CrmPage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [ready, setReady] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [view, setView] = useState<"kanban" | "lista" | "stats">("kanban");
+  const { theme, toggle } = useTheme();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -123,7 +142,6 @@ function CrmPage() {
     },
   });
 
-  // Realtime: refetch on lead changes
   useEffect(() => {
     if (!ready) return;
     const ch = supabase
@@ -137,10 +155,29 @@ function CrmPage() {
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
+  const filtered = useMemo(() => {
+    const list = leadsQ.data ?? [];
+    if (!search.trim()) return list;
+    const q = search.toLowerCase();
+    return list.filter((l) =>
+      [l.name, l.email, l.phone, l.message].some((v) => v?.toLowerCase().includes(q))
+    );
+  }, [leadsQ.data, search]);
+
   const grouped = useMemo(() => {
     const map: Record<Status, Lead[]> = { novos: [], em_contato: [], contrato_fechado: [], desqualificado: [] };
-    (leadsQ.data ?? []).forEach((l) => map[l.status].push(l));
+    filtered.forEach((l) => map[l.status].push(l));
     return map;
+  }, [filtered]);
+
+  const totals = useMemo(() => {
+    const all = leadsQ.data ?? [];
+    return {
+      leads: all.filter((l) => l.status === "novos" || l.status === "em_contato").length,
+      vendas: all.filter((l) => l.status === "contrato_fechado").length,
+      perdidos: all.filter((l) => l.status === "desqualificado").length,
+      total: all.length,
+    };
   }, [leadsQ.data]);
 
   const moveMut = useMutation({
@@ -180,60 +217,186 @@ function CrmPage() {
   const activeLead = activeId ? leadsQ.data?.find((l) => l.id === activeId) : null;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border bg-card/40 backdrop-blur sticky top-0 z-20">
-        <div className="max-w-[1600px] mx-auto px-6 py-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="size-9 rounded-lg bg-gradient-to-br from-primary to-purple-500" />
-            <div>
-              <h1 className="text-lg font-bold leading-none">CRM Admin</h1>
-              <p className="text-xs text-muted-foreground mt-1">{leadsQ.data?.length ?? 0} leads</p>
+    <div className="min-h-screen bg-background text-foreground flex">
+      {/* Sidebar */}
+      <aside className="w-16 shrink-0 bg-[#0f1729] text-white flex flex-col items-center py-5 gap-6">
+        <div className="size-10 rounded-full bg-emerald-700/40 border border-white/10 flex items-center justify-center text-xs font-bold">MA</div>
+        <nav className="flex flex-col gap-2 mt-2">
+          <button onClick={() => setView("kanban")} className={`size-10 rounded-lg flex items-center justify-center transition ${view === "kanban" ? "bg-white/10" : "hover:bg-white/5 text-white/60"}`} title="Kanban">
+            <LayoutGrid className="size-5" />
+          </button>
+          <button onClick={() => setView("stats")} className={`size-10 rounded-lg flex items-center justify-center transition ${view === "stats" ? "bg-white/10" : "hover:bg-white/5 text-white/60"}`} title="Estatísticas">
+            <PieChart className="size-5" />
+          </button>
+        </nav>
+        <button onClick={logout} className="mt-auto size-10 rounded-lg flex items-center justify-center text-white/60 hover:bg-white/5" title="Sair">
+          <ArrowLeft className="size-5" />
+        </button>
+      </aside>
+
+      {/* Main */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Top bar */}
+        <header className="border-b border-border bg-card px-6 py-4 flex items-center gap-4">
+          <div className="flex items-center gap-3 min-w-[260px]">
+            <h1 className="text-xl font-bold tracking-tight" style={{ fontFamily: "Georgia, serif" }}>Funil de Vendas</h1>
+            <span className="text-xs px-2.5 py-1 rounded-full bg-muted text-muted-foreground">Principal</span>
+          </div>
+          <div className="flex-1 max-w-2xl">
+            <div className="relative">
+              <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Pesquisar..."
+                className="pl-9 rounded-full bg-background"
+              />
             </div>
           </div>
           <div className="flex items-center gap-2">
             <LabelsManager labels={labelsQ.data ?? []} />
-            <Link to="/contato" className="hidden sm:inline-flex">
-              <Button variant="outline" size="sm"><ExternalLink className="size-4 mr-1" /> Formulário</Button>
-            </Link>
-            <Button variant="ghost" size="sm" onClick={logout}><LogOut className="size-4 mr-1" /> Sair</Button>
+            <Button className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground">
+              <Plus className="size-4 mr-1" /> NOVO LEAD
+            </Button>
+            <button onClick={toggle} className="size-9 rounded-full hover:bg-muted flex items-center justify-center" title="Alternar tema">
+              {theme === "light" ? <Moon className="size-4" /> : <Sun className="size-4" />}
+            </button>
+            <button className="size-9 rounded-full hover:bg-muted flex items-center justify-center" title="Notificações">
+              <Bell className="size-4" />
+            </button>
+            <button onClick={logout} className="size-9 rounded-full hover:bg-muted flex items-center justify-center" title="Sair">
+              <LogOut className="size-4" />
+            </button>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <main className="max-w-[1600px] mx-auto px-6 py-6">
-        <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}>
-          <div className="flex gap-4 overflow-x-auto pb-4">
-            {COLUMNS.map((col) => (
-              <div key={col.key} className="w-[320px] shrink-0">
-                <Column col={col} leads={grouped[col.key]} labels={labelsQ.data ?? []} />
-              </div>
-            ))}
+        <main className="flex-1 p-6 space-y-5 overflow-auto">
+          {/* Breadcrumb chips */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold px-3 py-1.5 rounded-full bg-[#0f1729] text-white">CRM</span>
+            <span className="text-xs font-semibold px-3 py-1.5 rounded-full bg-card border border-border text-foreground">
+              FUNIL PRINCIPAL
+            </span>
           </div>
-          <DragOverlay>
-            {activeLead ? <LeadCard lead={activeLead} labels={labelsQ.data ?? []} dragging /> : null}
-          </DragOverlay>
-        </DndContext>
-      </main>
+
+          {/* KPI cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <KpiCard color="#3b82f6" label="LEADS" value={String(totals.leads)} active />
+            <KpiCard color="#10b981" label="VENDAS" value={String(totals.vendas)} />
+            <KpiCard color="#94a3b8" label="PERDIDOS" value={String(totals.perdidos)} />
+            <KpiCard color="#0f5132" label="FATURAMENTO" value="R$ 0" />
+          </div>
+
+          {/* Tabs row */}
+          <div className="flex items-center justify-between gap-3 rounded-2xl bg-card border border-border px-3 py-2">
+            <div className="flex items-center gap-1">
+              <TabBtn active={view === "kanban"} onClick={() => setView("kanban")} icon={<LayoutGrid className="size-4" />} label="KANBAN" />
+              <TabBtn active={view === "lista"} onClick={() => setView("lista")} icon={<List className="size-4" />} label="LISTA" />
+              <TabBtn active={view === "stats"} onClick={() => setView("stats")} icon={<PieChart className="size-4" />} label="ESTATÍSTICAS" />
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="rounded-full"><Filter className="size-4 mr-1" /> FILTRAR</Button>
+              <Button variant="outline" size="icon" className="rounded-full" onClick={() => qc.invalidateQueries({ queryKey: ["leads"] })}>
+                <RefreshCw className="size-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Kanban */}
+          {view === "kanban" && (
+            <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}>
+              <div className="rounded-2xl bg-card border border-border p-4">
+                <div className="flex gap-4 overflow-x-auto pb-2">
+                  {COLUMNS.map((col) => (
+                    <div key={col.key} className="w-[300px] shrink-0">
+                      <Column col={col} leads={grouped[col.key]} labels={labelsQ.data ?? []} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <DragOverlay>
+                {activeLead ? <LeadCard lead={activeLead} labels={labelsQ.data ?? []} dragging /> : null}
+              </DragOverlay>
+            </DndContext>
+          )}
+
+          {view === "lista" && (
+            <div className="rounded-2xl bg-card border border-border overflow-hidden">
+              <table className="w-full text-sm">
+                <thead className="bg-muted/50">
+                  <tr className="text-left text-xs uppercase text-muted-foreground">
+                    <th className="px-4 py-3">Nome</th>
+                    <th className="px-4 py-3">Empresa / Email</th>
+                    <th className="px-4 py-3">Telefone</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3">Criado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((l) => (
+                    <tr key={l.id} className="border-t border-border">
+                      <td className="px-4 py-3 font-semibold">{l.name}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{l.email ?? "—"}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{l.phone ?? "—"}</td>
+                      <td className="px-4 py-3">{COLUMNS.find((c) => c.key === l.status)?.title}</td>
+                      <td className="px-4 py-3 text-muted-foreground">{new Date(l.created_at).toLocaleDateString("pt-BR")}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {view === "stats" && (
+            <div className="rounded-2xl bg-card border border-border p-8 text-center text-muted-foreground">
+              Estatísticas em breve. Total de leads: <b className="text-foreground">{totals.total}</b>
+            </div>
+          )}
+        </main>
+      </div>
     </div>
   );
 }
 
-function Column({ col, leads, labels }: { col: { key: Status; title: string; accent: string }; leads: Lead[]; labels: LabelRow[] }) {
+function KpiCard({ color, label, value, active }: { color: string; label: string; value: string; active?: boolean }) {
+  return (
+    <div className={`rounded-2xl bg-card border ${active ? "border-[#0f5132]" : "border-border"} px-5 py-4 flex items-center gap-4`}>
+      <span className="size-10 rounded-full shrink-0" style={{ background: color }} />
+      <div className="min-w-0">
+        <div className="text-[11px] tracking-wider font-semibold text-muted-foreground">{label}</div>
+        <div className="text-2xl font-bold leading-tight">{value}</div>
+      </div>
+    </div>
+  );
+}
+
+function TabBtn({ active, onClick, icon, label }: { active: boolean; onClick: () => void; icon: React.ReactNode; label: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wider inline-flex items-center gap-2 transition ${active ? "bg-background shadow-sm border border-border" : "text-muted-foreground hover:bg-muted"}`}
+    >
+      {icon} {label}
+    </button>
+  );
+}
+
+function Column({ col, leads, labels }: { col: { key: Status; title: string; dot: string }; leads: Lead[]; labels: LabelRow[] }) {
   const { setNodeRef, isOver } = useDroppable({ id: col.key });
   return (
-    <div
-      ref={setNodeRef}
-      className={`rounded-2xl border border-border bg-card/30 backdrop-blur flex flex-col min-h-[60vh] transition-colors ${isOver ? "bg-primary/5 border-primary/40" : ""}`}
-    >
-      <div className={`px-4 py-3 border-b border-border bg-gradient-to-b ${col.accent} rounded-t-2xl`}>
-        <div className="flex items-center justify-between">
-          <h2 className="font-semibold">{col.title}</h2>
-          <Badge variant="secondary">{leads.length}</Badge>
+    <div ref={setNodeRef} className={`flex flex-col min-h-[60vh] rounded-xl transition-colors ${isOver ? "bg-primary/5" : ""}`}>
+      <div className="px-1 py-2 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="size-2.5 rounded-full" style={{ background: col.dot }} />
+          <h2 className="font-bold text-xs tracking-wider">{col.title}</h2>
         </div>
+        <Badge variant="outline" className="rounded-full">{leads.length}</Badge>
       </div>
-      <div className="flex-1 p-3 space-y-3 overflow-y-auto">
+      <div className="flex-1 space-y-3 pt-2">
         {leads.length === 0 ? (
-          <p className="text-xs text-muted-foreground text-center py-8">Arraste cards para cá</p>
+          <div className="rounded-xl border border-dashed border-border p-6 text-xs text-muted-foreground text-center">
+            Solte cards aqui
+          </div>
         ) : (
           leads.map((l) => <DraggableCard key={l.id} lead={l} labels={labels} />)
         )}
@@ -255,7 +418,8 @@ function DraggableCard({ lead, labels }: { lead: Lead; labels: LabelRow[] }) {
 function LeadCard({ lead, labels, dragging }: { lead: Lead; labels: LabelRow[]; dragging?: boolean }) {
   const qc = useQueryClient();
   const label = labels.find((l) => l.id === lead.label_id);
-  const hasUtm = lead.utm_source || lead.utm_medium || lead.utm_campaign;
+  const company = lead.message?.split("\n").find((line) => line.toLowerCase().includes("empresa"))?.split(":")[1]?.trim();
+  const dateStr = new Date(lead.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
 
   async function setLabel(label_id: string | null) {
     await supabase.from("leads").update({ label_id }).eq("id", lead.id);
@@ -268,19 +432,12 @@ function LeadCard({ lead, labels, dragging }: { lead: Lead; labels: LabelRow[]; 
   }
 
   return (
-    <div className={`rounded-xl border border-border bg-card p-3 shadow-sm hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing ${dragging ? "shadow-2xl ring-2 ring-primary/50" : ""}`}>
-      <div className="flex items-start justify-between gap-2 mb-2">
-        <div className="min-w-0 flex-1">
-          <h3 className="font-semibold text-sm truncate">{lead.name}</h3>
-          {label && (
-            <Badge style={{ backgroundColor: label.color + "22", color: label.color, borderColor: label.color + "55" }} variant="outline" className="mt-1">
-              <Tag className="size-3 mr-1" />{label.name}
-            </Badge>
-          )}
-        </div>
+    <div className={`rounded-xl border border-border bg-background p-4 shadow-sm hover:shadow-md transition cursor-grab active:cursor-grabbing ${dragging ? "shadow-2xl ring-2 ring-primary/50" : ""}`}>
+      <div className="flex items-start justify-between gap-2">
+        <h3 className="font-bold text-sm uppercase tracking-wide truncate" style={{ fontFamily: "Georgia, serif" }}>{lead.name}</h3>
         <DropdownMenu>
           <DropdownMenuTrigger asChild onPointerDown={(e) => e.stopPropagation()}>
-            <button className="p-1 hover:bg-accent rounded" aria-label="Ações"><MoreVertical className="size-4" /></button>
+            <button className="p-1 hover:bg-muted rounded" aria-label="Ações"><MoreVertical className="size-4" /></button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" onPointerDown={(e) => e.stopPropagation()}>
             <DropdownMenuItem onSelect={() => setLabel(null)}>Sem etiqueta</DropdownMenuItem>
@@ -295,19 +452,20 @@ function LeadCard({ lead, labels, dragging }: { lead: Lead; labels: LabelRow[]; 
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="space-y-1 text-xs text-muted-foreground">
-        {lead.email && <div className="flex items-center gap-1.5"><Mail className="size-3" /><span className="truncate">{lead.email}</span></div>}
-        {lead.phone && <div className="flex items-center gap-1.5"><Phone className="size-3" />{lead.phone}</div>}
-      </div>
-      {lead.message && <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{lead.message}</p>}
-      {hasUtm && (
-        <div className="mt-2 pt-2 border-t border-border/50 flex flex-wrap gap-1">
-          {lead.utm_source && <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">src: {lead.utm_source}</span>}
-          {lead.utm_medium && <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">med: {lead.utm_medium}</span>}
-          {lead.utm_campaign && <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">cmp: {lead.utm_campaign}</span>}
-        </div>
+      {company && <p className="text-xs text-muted-foreground uppercase tracking-wide mt-0.5">{company}</p>}
+      {label && (
+        <Badge style={{ backgroundColor: label.color + "22", color: label.color, borderColor: label.color + "55" }} variant="outline" className="mt-2">
+          <Tag className="size-3 mr-1" />{label.name}
+        </Badge>
       )}
-      <p className="text-[10px] text-muted-foreground mt-2">{new Date(lead.created_at).toLocaleString("pt-BR")}</p>
+      <div className="space-y-1.5 text-xs text-muted-foreground mt-3">
+        {lead.email && <div className="flex items-center gap-1.5"><Mail className="size-3.5 text-primary" /><span className="truncate">{lead.email}</span></div>}
+        {lead.phone && <div className="flex items-center gap-1.5"><Phone className="size-3.5 text-emerald-500" />{lead.phone}</div>}
+      </div>
+      <div className="mt-3 pt-3 border-t border-border flex items-center justify-between text-xs">
+        <span className="font-bold">R$ 0,00</span>
+        <span className="text-muted-foreground inline-flex items-center gap-1"><Calendar className="size-3" /> {dateStr}</span>
+      </div>
     </div>
   );
 }
@@ -342,12 +500,10 @@ function LabelsManager({ labels }: { labels: LabelRow[] }) {
   return (
     <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (o) startNew(); }}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm"><Tag className="size-4 mr-1" /> Etiquetas</Button>
+        <Button variant="outline" className="rounded-full"><Tag className="size-4 mr-1" /> ETIQUETAS</Button>
       </DialogTrigger>
       <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Gerenciar etiquetas</DialogTitle>
-        </DialogHeader>
+        <DialogHeader><DialogTitle>Gerenciar etiquetas</DialogTitle></DialogHeader>
         <div className="space-y-2 max-h-60 overflow-y-auto">
           {labels.length === 0 && <p className="text-sm text-muted-foreground">Nenhuma etiqueta criada.</p>}
           {labels.map((l) => (
