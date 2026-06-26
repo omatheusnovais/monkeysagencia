@@ -617,9 +617,8 @@ function NewLeadDialog() {
   );
 }
 
-function LeadDetailDialog({ lead, labels, open, onOpenChange }: { lead: Lead; labels: LabelRow[]; open: boolean; onOpenChange: (o: boolean) => void }) {
+function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: boolean; onOpenChange: (o: boolean) => void }) {
   const qc = useQueryClient();
-  const label = labels.find((l) => l.id === lead.label_id);
   const parsed: Record<string, string> = {};
   (lead.message ?? "").split("\n").forEach((line) => {
     const idx = line.indexOf(":");
@@ -645,7 +644,6 @@ function LeadDetailDialog({ lead, labels, open, onOpenChange }: { lead: Lead; la
     email: lead.email ?? "",
     phone: lead.phone ?? "",
     status: lead.status,
-    label_id: lead.label_id ?? "",
     company: parsed["Empresa"] ?? "",
     faturamento: parsed["Faturamento mensal"] ?? parsed["Faturamento"] ?? "",
     investimento: parsed["Investimento"] ?? "",
@@ -668,7 +666,6 @@ function LeadDetailDialog({ lead, labels, open, onOpenChange }: { lead: Lead; la
       email: lead.email ?? "",
       phone: lead.phone ?? "",
       status: lead.status,
-      label_id: lead.label_id ?? "",
       company: p["Empresa"] ?? "",
       faturamento: p["Faturamento mensal"] ?? p["Faturamento"] ?? "",
       investimento: p["Investimento"] ?? "",
@@ -689,7 +686,6 @@ function LeadDetailDialog({ lead, labels, open, onOpenChange }: { lead: Lead; la
       email: form.email.trim() || null,
       phone: form.phone.trim() || null,
       status: form.status,
-      label_id: form.label_id || null,
       message: lines.length ? lines.join("\n") : null,
     }).eq("id", lead.id);
     setSaving(false);
@@ -697,6 +693,8 @@ function LeadDetailDialog({ lead, labels, open, onOpenChange }: { lead: Lead; la
     qc.invalidateQueries({ queryKey: ["leads"] });
     setEditing(false);
   }
+
+
 
   async function remove() {
     if (!confirm("Excluir este lead?")) return;
