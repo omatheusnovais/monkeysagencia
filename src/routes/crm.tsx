@@ -764,12 +764,6 @@ function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: bool
           <div className="space-y-4 text-sm">
             <div className="flex flex-wrap gap-2">
               <span className="text-xs px-2.5 py-1 rounded-full bg-muted">{statusTitle}</span>
-              {label && (
-                <span className="text-xs px-2.5 py-1 rounded-full inline-flex items-center gap-1"
-                  style={{ backgroundColor: label.color + "22", color: label.color }}>
-                  <Tag className="size-3" />{label.name}
-                </span>
-              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
