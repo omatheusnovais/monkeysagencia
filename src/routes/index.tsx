@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import {
   ArrowRight, Check, Sparkles, Target, Users, TrendingUp, Bot, BarChart3,
   Zap, MessageSquare, Search, LayoutTemplate, Brain, Database,
@@ -697,6 +698,8 @@ function AboutSection() {
 
 function OfferSection() {
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const items = [
     "Auditoria gratuita das suas campanhas e LP atuais",
     "Onde sua verba está vazando (em R$) e como tampar",
@@ -704,8 +707,35 @@ function OfferSection() {
     "Plano de ação de 30 dias, leva mesmo se não fechar",
   ];
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setError(null);
+    setLoading(true);
+    const fd = new FormData(e.currentTarget);
+    const name = String(fd.get("name") ?? "").trim();
+    const company = String(fd.get("company") ?? "").trim();
+    const phone = String(fd.get("phone") ?? "").trim();
+    const faturamento = String(fd.get("faturamento") ?? "");
+    const investimento = String(fd.get("investimento") ?? "");
+
+    const message = `Empresa: ${company}\nFaturamento mensal: ${faturamento}\nInvestimento diário: ${investimento}`;
+
+    const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : new URLSearchParams();
+
+    const { error: err } = await supabase.from("leads").insert({
+      name,
+      phone,
+      message,
+      status: "novos",
+      label_id: null,
+      utm_source: params.get("utm_source"),
+      utm_medium: params.get("utm_medium"),
+      utm_campaign: params.get("utm_campaign"),
+      utm_term: params.get("utm_term"),
+      utm_content: params.get("utm_content"),
+    });
+    setLoading(false);
+    if (err) { setError("Não foi possível enviar agora. Tente novamente."); return; }
     setSent(true);
   }
 
@@ -747,13 +777,14 @@ function OfferSection() {
               </div>
             ) : (
               <form onSubmit={onSubmit} className="space-y-4">
-                <Field label="Nome completo" type="text" required />
-                <Field label="Nome da empresa" type="text" required />
-                <Field label="WhatsApp" type="tel" required />
-                <SelectField label="Faturamento mensal" options={["Até R$10k", "R$10k–30k", "R$30k–60k", "R$60k–120k", "Acima de R$120k"]} />
-                <SelectField label="Investimento diário em tráfego" options={["Não invisto ainda", "Até R$50/dia", "R$51–100/dia", "Acima de R$100/dia"]} />
-                <button type="submit" className="group mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#4F7CFF]/30 transition-all hover:scale-[1.01]">
-                  Quero meu diagnóstico gratuito
+                <Field label="Nome completo" name="name" type="text" required />
+                <Field label="Nome da empresa" name="company" type="text" required />
+                <Field label="WhatsApp" name="phone" type="tel" required />
+                <SelectField label="Faturamento mensal" name="faturamento" options={["Até R$10k", "R$10k–30k", "R$30k–60k", "R$60k–120k", "Acima de R$120k"]} />
+                <SelectField label="Investimento diário em tráfego" name="investimento" options={["Não invisto ainda", "Até R$50/dia", "R$51–100/dia", "Acima de R$100/dia"]} />
+                {error && <p className="text-sm text-red-400" role="alert">{error}</p>}
+                <button type="submit" disabled={loading} className="group mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#4F7CFF]/30 transition-all hover:scale-[1.01] disabled:opacity-60">
+                  {loading ? "Enviando..." : "Quero meu diagnóstico gratuito"}
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </button>
               </form>
@@ -765,11 +796,12 @@ function OfferSection() {
   );
 }
 
-function Field({ label, type, required }: { label: string; type: string; required?: boolean }) {
+function Field({ label, name, type, required }: { label: string; name: string; type: string; required?: boolean }) {
   return (
     <label className="block">
       <span className="mb-1.5 block text-xs font-medium text-white/70">{label}</span>
       <input
+        name={name}
         type={type}
         required={required}
         className="w-full rounded-lg border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-white placeholder-white/30 outline-none transition-all focus:border-[#4F7CFF] focus:bg-white/[0.07] focus:ring-2 focus:ring-[#4F7CFF]/30"
@@ -778,16 +810,18 @@ function Field({ label, type, required }: { label: string; type: string; require
   );
 }
 
-function SelectField({ label, options }: { label: string; options: string[] }) {
+function SelectField({ label, name, options }: { label: string; name: string; options: string[] }) {
   return (
     <label className="block">
       <span className="mb-1.5 block text-xs font-medium text-white/70">{label}</span>
       <select
+        name={name}
         required
         defaultValue=""
         className="w-full rounded-lg border border-white/10 bg-white/5 px-3.5 py-2.5 text-sm text-white outline-none transition-all focus:border-[#4F7CFF] focus:ring-2 focus:ring-[#4F7CFF]/30"
       >
         <option value="" disabled className="bg-black">Selecione...</option>
+
         {options.map(o => <option key={o} value={o} className="bg-black">{o}</option>)}
       </select>
     </label>
