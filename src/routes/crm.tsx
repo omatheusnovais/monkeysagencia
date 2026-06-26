@@ -218,22 +218,6 @@ function CrmPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex">
-      {/* Sidebar */}
-      <aside className="w-16 shrink-0 bg-[#0f1729] text-white flex flex-col items-center py-5 gap-6">
-        <div className="size-10 rounded-full bg-emerald-700/40 border border-white/10 flex items-center justify-center text-xs font-bold">MA</div>
-        <nav className="flex flex-col gap-2 mt-2">
-          <button onClick={() => setView("kanban")} className={`size-10 rounded-lg flex items-center justify-center transition ${view === "kanban" ? "bg-white/10" : "hover:bg-white/5 text-white/60"}`} title="Kanban">
-            <LayoutGrid className="size-5" />
-          </button>
-          <button onClick={() => setView("stats")} className={`size-10 rounded-lg flex items-center justify-center transition ${view === "stats" ? "bg-white/10" : "hover:bg-white/5 text-white/60"}`} title="Estatísticas">
-            <PieChart className="size-5" />
-          </button>
-        </nav>
-        <button onClick={logout} className="mt-auto size-10 rounded-lg flex items-center justify-center text-white/60 hover:bg-white/5" title="Sair">
-          <ArrowLeft className="size-5" />
-        </button>
-      </aside>
-
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
