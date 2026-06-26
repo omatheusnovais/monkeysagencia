@@ -916,3 +916,46 @@ function Field({ icon, label, value }: { icon: React.ReactNode; label: string; v
   );
 }
 
+
+function NewsPanel() {
+  const fetchNews = useServerFn(getMarketingNews);
+  const { data, isLoading, isError, refetch, isFetching } = useQuery({
+    queryKey: ["marketing-news"],
+    queryFn: () => fetchNews(),
+    staleTime: 1000 * 60 * 30,
+  });
+  const items = data?.items ?? [];
+  return (
+    <div className="rounded-2xl bg-card border border-border p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-bold font-display">Notícias do dia</h2>
+          <p className="text-sm text-muted-foreground">Marketing e tráfego, atualizado das principais fontes do Brasil.</p>
+        </div>
+        <Button variant="outline" size="sm" className="rounded-full" onClick={() => refetch()} disabled={isFetching}>
+          <RefreshCw className={`size-4 mr-1 ${isFetching ? "animate-spin" : ""}`} /> Atualizar
+        </Button>
+      </div>
+      {isLoading && <div className="text-sm text-muted-foreground">Carregando notícias…</div>}
+      {isError && <div className="text-sm text-destructive">Não foi possível carregar as notícias agora.</div>}
+      {!isLoading && items.length === 0 && !isError && (
+        <div className="text-sm text-muted-foreground">Nenhuma notícia encontrada no momento.</div>
+      )}
+      <ul className="divide-y divide-border">
+        {items.map((n) => (
+          <li key={n.link} className="py-3">
+            <a href={n.link} target="_blank" rel="noopener noreferrer" className="group flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <div className="font-medium leading-snug group-hover:underline">{n.title}</div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {n.source}{n.pubDate ? ` · ${new Date(n.pubDate).toLocaleDateString("pt-BR")}` : ""}
+                </div>
+              </div>
+              <ExternalLink className="size-4 text-muted-foreground shrink-0 mt-1" />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
