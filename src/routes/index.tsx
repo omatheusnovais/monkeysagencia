@@ -9,13 +9,14 @@ import {
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from "@/components/ui/accordion";
+import monkeysLogo from "@/assets/monkeys-logo.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Performance Agency - Tráfego Pago com IA | Geração de Leads Qualificados" },
-      { name: "description", content: "Criamos sistemas previsíveis de aquisição de clientes com Meta Ads, Google Ads, Landing Pages otimizadas e automações com IA. Diagnóstico gratuito." },
-      { property: "og:title", content: "Performance Agency - Tráfego Pago com IA" },
+      { title: "Monkeys Agência - Tráfego Pago com IA | Geração de Leads Qualificados" },
+      { name: "description", content: "A Monkeys Agência cria sistemas previsíveis de aquisição de clientes com Meta Ads, Google Ads, Landing Pages otimizadas e automações com IA. Diagnóstico gratuito." },
+      { property: "og:title", content: "Monkeys Agência - Tráfego Pago com IA" },
       { property: "og:description", content: "Sistemas previsíveis de aquisição com Meta Ads, Google Ads e IA." },
       { property: "og:type", content: "website" },
     ],
@@ -48,11 +49,8 @@ function Header() {
   return (
     <header className="fixed top-0 z-50 w-full border-b border-white/5 bg-black/40 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-        <a href="#" className="flex items-center gap-2">
-          <div className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-[#4F7CFF] to-[#8B5CF6]">
-            <Sparkles className="h-4 w-4 text-white" />
-          </div>
-          <span className="text-lg font-bold tracking-tight">SuaLogo</span>
+        <a href="#" className="flex items-center gap-2" aria-label="Monkeys Agência">
+          <img src={monkeysLogo.url} alt="Monkeys Agência" className="h-7 w-auto invert" />
         </a>
         <nav className="hidden items-center gap-8 md:flex">
           {links.map(l => (
@@ -821,12 +819,9 @@ function Footer() {
   return (
     <footer className="border-t border-white/5 bg-black/60 py-10">
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 md:flex-row">
-        <div className="flex items-center gap-2">
-          <div className="grid h-7 w-7 place-items-center rounded-lg bg-gradient-to-br from-[#4F7CFF] to-[#8B5CF6]">
-            <Sparkles className="h-3.5 w-3.5 text-white" />
-          </div>
-          <span className="text-sm font-bold">SuaLogo</span>
-          <span className="ml-3 text-xs text-white/40">© {new Date().getFullYear()} Performance Agency</span>
+        <div className="flex items-center gap-3">
+          <img src={monkeysLogo.url} alt="Monkeys Agência" className="h-6 w-auto invert" />
+          <span className="text-xs text-white/40">© {new Date().getFullYear()} Monkeys Agência</span>
         </div>
         <div className="flex items-center gap-5 text-sm text-white/60">
           <a href="#" className="flex items-center gap-1.5 transition-colors hover:text-white"><Instagram className="h-4 w-4" />Instagram</a>
