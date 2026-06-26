@@ -297,18 +297,21 @@ function Hero() {
 
 function LogosSection() {
   const logos = ["NEXUS", "QUANTUM", "VERTEX", "PRISMA", "ORBITA", "AXIS"];
+  const loop = [...logos, ...logos];
   return (
     <section className="border-y border-white/5 bg-black/40 py-12">
       <div className="mx-auto max-w-7xl px-6">
         <p className="text-center text-xs uppercase tracking-[0.2em] text-white/40">
           Empresas que confiam no nosso método
         </p>
-        <div className="mt-8 grid grid-cols-3 items-center gap-8 md:grid-cols-6">
-          {logos.map(l => (
-            <div key={l} className="text-center text-xl font-black tracking-widest text-white/30 transition-colors hover:text-white/60">
-              {l}
-            </div>
-          ))}
+        <div className="relative mt-8 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
+          <div className="flex w-max gap-16 animate-marquee">
+            {loop.map((l, i) => (
+              <div key={`${l}-${i}`} className="shrink-0 text-xl font-black tracking-widest text-white/30 transition-colors hover:text-white/60">
+                {l}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
