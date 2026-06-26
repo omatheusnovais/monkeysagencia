@@ -14,6 +14,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription,
 } from "@/components/ui/dialog";
 import monkeysLogo from "@/assets/monkeys-logo.png.asset.json";
+import matheusPhoto from "@/assets/matheus-palco.png.asset.json";
 
 const WHATSAPP_URL = `https://wa.me/5562993519901?text=${encodeURIComponent("Olá vim pela Landing Page e gostaria de agendar uma reunião!")}`;
 const INSTAGRAM_AGENCY = "https://www.instagram.com/monkeys.agencia";
