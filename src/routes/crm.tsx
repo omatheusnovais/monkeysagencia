@@ -143,15 +143,6 @@ function CrmPage() {
     },
   });
 
-  const labelsQ = useQuery({
-    queryKey: ["labels"],
-    enabled: ready,
-    queryFn: async () => {
-      const { data, error } = await supabase.from("labels").select("*").order("name");
-      if (error) throw error;
-      return data as LabelRow[];
-    },
-  });
 
   useEffect(() => {
     if (!ready) return;
