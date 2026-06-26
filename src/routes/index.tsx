@@ -645,7 +645,6 @@ function AboutSection() {
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} className="h-full">
             <div className="relative h-full">
               <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-[#4F7CFF]/30 to-[#8B5CF6]/30 blur-3xl" />
-              <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-[#4F7CFF]/30 to-[#8B5CF6]/30 blur-3xl" />
               <div className="relative h-full w-full overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/10 to-transparent backdrop-blur">
                 <img
                   src={matheusPhoto.url}
