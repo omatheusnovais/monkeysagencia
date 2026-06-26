@@ -317,7 +317,7 @@ function CrmPage() {
                 </div>
               </div>
               <DragOverlay>
-                {activeLead ? <LeadCard lead={activeLead} labels={labelsQ.data ?? []} dragging /> : null}
+                {activeLead ? <LeadCard lead={activeLead} dragging /> : null}
               </DragOverlay>
             </DndContext>
           )}
