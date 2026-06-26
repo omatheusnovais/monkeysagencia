@@ -806,9 +806,9 @@ function FinalCta() {
           <br />
           <span className="bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] bg-clip-text text-transparent">clientes qualificados?</span>
         </motion.h2>
-        <p className="mt-5 text-lg text-white/70">Receba seu diagnóstico e plano personalizado em até 24h.</p>
+        <p className="mt-5 text-lg text-white/70">Diagnóstico 100% gratuito, sem compromisso. Resposta em até 24h — e o plano é seu mesmo se a gente não fechar.</p>
         <a href="#diagnostico" className="mt-8 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] px-7 py-4 text-sm font-semibold text-white shadow-lg shadow-[#4F7CFF]/40 transition-all hover:scale-[1.02]">
-          Agendar Diagnóstico Agora
+          Quero meu diagnóstico agora
           <ArrowRight className="h-4 w-4" />
         </a>
       </div>
