@@ -21,10 +21,10 @@ const INSTAGRAM_PERSONAL = "https://www.instagram.com/omatheusnovais";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Monkeys Agência - Tráfego Pago com IA | Geração de Leads Qualificados" },
-      { name: "description", content: "A Monkeys Agência cria sistemas previsíveis de aquisição de clientes com Meta Ads, Google Ads, Landing Pages otimizadas e automações com IA. Diagnóstico gratuito." },
-      { property: "og:title", content: "Monkeys Agência - Tráfego Pago com IA" },
-      { property: "og:description", content: "Sistemas previsíveis de aquisição com Meta Ads, Google Ads e IA." },
+      { title: "Monkeys Agência - Tráfego Pago | Geração de Leads Qualificados" },
+      { name: "description", content: "A Monkeys Agência cria sistemas previsíveis de aquisição de clientes com Meta Ads, Google Ads, Landing Pages otimizadas e automação. Diagnóstico gratuito." },
+      { property: "og:title", content: "Monkeys Agência - Tráfego Pago de Performance" },
+      { property: "og:description", content: "Sistemas previsíveis de aquisição com Meta Ads, Google Ads e CRM." },
       { property: "og:type", content: "website" },
     ],
   }),
