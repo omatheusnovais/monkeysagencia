@@ -810,93 +810,108 @@ function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: bool
               <span className="text-xs px-2.5 py-1 rounded-full bg-muted">{statusTitle}</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Field icon={<Mail className="size-3.5" />} label="Email" value={lead.email ?? "—"} />
-              <Field icon={<Phone className="size-3.5" />} label="WhatsApp / Telefone" value={lead.phone ?? "—"} />
-            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+              {/* COLUNA ESQUERDA */}
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Field icon={<Mail className="size-3.5" />} label="Email" value={lead.email ?? "—"} />
+                  <Field icon={<Phone className="size-3.5" />} label="WhatsApp / Telefone" value={lead.phone ?? "—"} />
+                </div>
 
-            {Object.keys(diagnostic).length > 0 && (
-              <div className="rounded-lg border border-border p-3 space-y-2">
-                <h4 className="text-xs font-semibold tracking-wider text-muted-foreground">RESPOSTAS DO DIAGNÓSTICO</h4>
-                {Object.entries(diagnostic).map(([k, v]) => (
-                  <div key={k} className="flex justify-between gap-3 text-sm">
-                    <span className="text-muted-foreground">{k}</span>
-                    <span className="font-medium text-right">{v}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className="rounded-lg border border-border p-3 space-y-3 bg-[#ece5dd] dark:bg-muted/40">
-              <h4 className="text-xs font-semibold tracking-wider text-muted-foreground">ANOTAÇÕES</h4>
-              <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
-                {notes.length === 0 ? (
-                  <p className="text-xs text-muted-foreground italic">Nenhuma anotação ainda.</p>
-                ) : (
-                  notes.map((n) => (
-                    <div key={n.id} className="flex justify-end">
-                      <div className="group relative max-w-[85%] rounded-lg rounded-tr-sm bg-[#dcf8c6] dark:bg-emerald-900/40 px-3 py-2 shadow-sm">
-                        <p className="text-sm whitespace-pre-wrap break-words text-foreground">{n.text}</p>
-                        <div className="flex items-center justify-end gap-2 mt-1 text-[10px] text-muted-foreground">
-                          {n.editedAt && <span className="italic">editado</span>}
-                          <span>{new Date(n.at).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</span>
+                {(() => {
+                  const filtered = Object.entries(diagnostic).filter(([k]) => k !== "Valor do contrato" && k !== "Início do contrato");
+                  return filtered.length > 0 && (
+                    <div className="rounded-lg border border-border p-3 space-y-2">
+                      <h4 className="text-xs font-semibold tracking-wider text-muted-foreground">RESPOSTAS DO DIAGNÓSTICO</h4>
+                      {filtered.map(([k, v]) => (
+                        <div key={k} className="flex justify-between gap-3 text-sm">
+                          <span className="text-muted-foreground">{k}</span>
+                          <span className="font-medium text-right">{v}</span>
                         </div>
-                        <div className="absolute -top-2 -left-2 hidden group-hover:flex gap-1">
-                          <button
-                            type="button"
-                            onClick={() => startEditNote(n)}
-                            className="size-6 rounded-full bg-background border border-border text-foreground flex items-center justify-center hover:bg-muted"
-                            title="Editar"
-                          >
-                            <Pencil className="size-3" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => deleteNote(n.id)}
-                            className="size-6 rounded-full bg-background border border-border text-destructive flex items-center justify-center hover:bg-muted"
-                            title="Excluir"
-                          >
-                            <Trash2 className="size-3" />
-                          </button>
+                      ))}
+                    </div>
+                  );
+                })()}
+
+                <div className="rounded-lg border border-border p-3 space-y-2">
+                  <h4 className="text-xs font-semibold tracking-wider text-muted-foreground">CONTRATO</h4>
+                  <div className="flex justify-between gap-3 text-sm">
+                    <span className="text-muted-foreground">Valor</span>
+                    <span className="font-medium text-right">{valorContrato || "—"}</span>
+                  </div>
+                  <div className="flex justify-between gap-3 text-sm">
+                    <span className="text-muted-foreground">Início</span>
+                    <span className="font-medium text-right">{inicioContrato ? fmtDate(inicioContrato) : "—"}</span>
+                  </div>
+                  <div className="flex justify-between gap-3 text-sm">
+                    <span className="text-muted-foreground">Vencimento (90 dias)</span>
+                    <span className="font-medium text-right">{vencimentoContrato ? fmtDate(vencimentoContrato) : "—"}</span>
+                  </div>
+                </div>
+
+                {utms.length > 0 && (
+                  <div className="rounded-lg border border-border p-3 space-y-1.5">
+                    <h4 className="text-xs font-semibold tracking-wider text-muted-foreground">ORIGEM (UTMs)</h4>
+                    {utms.map(([k, v]) => (
+                      <div key={k} className="flex justify-between gap-3 text-xs">
+                        <span className="text-muted-foreground">{k}</span>
+                        <span className="font-mono">{v}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* COLUNA DIREITA - ANOTAÇÕES */}
+              <div className="rounded-lg border border-border p-3 space-y-3 bg-[#ece5dd] dark:bg-muted/40 lg:sticky lg:top-0 h-full">
+                <h4 className="text-xs font-semibold tracking-wider text-muted-foreground">ANOTAÇÕES</h4>
+                <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
+                  {notes.length === 0 ? (
+                    <p className="text-xs text-muted-foreground italic">Nenhuma anotação ainda.</p>
+                  ) : (
+                    notes.map((n) => (
+                      <div key={n.id} className="flex justify-end">
+                        <div className="group relative max-w-[85%] rounded-lg rounded-tr-sm bg-[#dcf8c6] dark:bg-emerald-900/40 px-3 py-2 shadow-sm">
+                          <p className="text-sm whitespace-pre-wrap break-words text-foreground">{n.text}</p>
+                          <div className="flex items-center justify-end gap-2 mt-1 text-[10px] text-muted-foreground">
+                            {n.editedAt && <span className="italic">editado</span>}
+                            <span>{new Date(n.at).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</span>
+                          </div>
+                          <div className="absolute -top-2 -left-2 hidden group-hover:flex gap-1">
+                            <button type="button" onClick={() => startEditNote(n)}
+                              className="size-6 rounded-full bg-background border border-border text-foreground flex items-center justify-center hover:bg-muted" title="Editar">
+                              <Pencil className="size-3" />
+                            </button>
+                            <button type="button" onClick={() => deleteNote(n.id)}
+                              className="size-6 rounded-full bg-background border border-border text-destructive flex items-center justify-center hover:bg-muted" title="Excluir">
+                              <Trash2 className="size-3" />
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))
-                )}
-              </div>
-              <div className="flex items-end gap-2 pt-1">
-                <textarea
-                  value={noteDraft}
-                  onChange={(e) => setNoteDraft(e.target.value)}
-                  rows={2}
-                  placeholder={editingNoteId ? "Editar anotação..." : "Escreva uma anotação..."}
-                  onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) addOrUpdateNote(); }}
-                  className="flex-1 rounded-2xl border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none"
-                />
-                <Button size="sm" onClick={addOrUpdateNote} disabled={savingNote || !noteDraft.trim()}>
-                  {savingNote ? "..." : editingNoteId ? "Atualizar" : "Enviar"}
-                </Button>
-                {editingNoteId && (
-                  <Button size="sm" variant="ghost" onClick={() => { setEditingNoteId(null); setNoteDraft(""); }}>
-                    Cancelar
+                    ))
+                  )}
+                </div>
+                <div className="flex items-end gap-2 pt-1">
+                  <textarea
+                    value={noteDraft}
+                    onChange={(e) => setNoteDraft(e.target.value)}
+                    rows={2}
+                    placeholder={editingNoteId ? "Editar anotação..." : "Escreva uma anotação..."}
+                    onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) addOrUpdateNote(); }}
+                    className="flex-1 rounded-2xl border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+                  />
+                  <Button size="sm" onClick={addOrUpdateNote} disabled={savingNote || !noteDraft.trim()}>
+                    {savingNote ? "..." : editingNoteId ? "Atualizar" : "Enviar"}
                   </Button>
-                )}
+                  {editingNoteId && (
+                    <Button size="sm" variant="ghost" onClick={() => { setEditingNoteId(null); setNoteDraft(""); }}>
+                      Cancelar
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
-
-
-
-            {utms.length > 0 && (
-              <div className="rounded-lg border border-border p-3 space-y-1.5">
-                <h4 className="text-xs font-semibold tracking-wider text-muted-foreground">ORIGEM (UTMs)</h4>
-                {utms.map(([k, v]) => (
-                  <div key={k} className="flex justify-between gap-3 text-xs">
-                    <span className="text-muted-foreground">{k}</span>
-                    <span className="font-mono">{v}</span>
-                  </div>
-                ))}
-              </div>
-            )}
 
             <div className="text-xs text-muted-foreground">
               Criado em {new Date(lead.created_at).toLocaleString("pt-BR")}
