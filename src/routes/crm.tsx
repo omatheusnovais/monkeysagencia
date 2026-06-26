@@ -112,7 +112,7 @@ function CrmPage() {
   const [ready, setReady] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [view, setView] = useState<"kanban" | "stats">("kanban");
+  const [view, setView] = useState<"kanban">("kanban");
   const { theme, toggle } = useTheme();
 
   useEffect(() => {
