@@ -210,14 +210,15 @@ function Hero() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
               </span>
-              Novo • Performance de alto nível · 2026
+              Performance de alto nível · 2026
             </motion.div>
 
             <motion.h1
               variants={fadeUp}
-              className="mt-6 text-[2.5rem] font-black leading-[1.02] tracking-[-0.03em] sm:text-5xl md:text-[4.25rem]"
+              className="mt-6 text-[2rem] font-black leading-[1.05] tracking-[-0.03em] sm:text-[2.75rem] md:text-[3.5rem]"
             >
               Mais previsibilidade na sua
+
               <br />
               <span className="relative inline-block bg-gradient-to-r from-white via-[#c9d4ff] to-[#a48bff] bg-clip-text text-transparent">
                 geração de clientes
