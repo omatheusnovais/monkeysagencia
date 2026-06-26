@@ -802,7 +802,7 @@ function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: bool
               <span className="text-xs px-2.5 py-1 rounded-full bg-muted">{statusTitle}</span>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
               {/* COLUNA ESQUERDA */}
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
