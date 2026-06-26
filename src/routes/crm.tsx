@@ -202,9 +202,11 @@ function CrmPage() {
 
       <main className="max-w-[1600px] mx-auto px-6 py-6">
         <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+          <div className="flex gap-4 overflow-x-auto pb-4">
             {COLUMNS.map((col) => (
-              <Column key={col.key} col={col} leads={grouped[col.key]} labels={labelsQ.data ?? []} />
+              <div key={col.key} className="w-[320px] shrink-0">
+                <Column col={col} leads={grouped[col.key]} labels={labelsQ.data ?? []} />
+              </div>
             ))}
           </div>
           <DragOverlay>
@@ -315,17 +317,17 @@ function LabelsManager({ labels }: { labels: LabelRow[] }) {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<LabelRow | null>(null);
   const [name, setName] = useState("");
-  const [color, setColor] = useState("#6366f1");
+  const DEFAULT_COLOR = "#ffcc00";
 
-  function startNew() { setEditing(null); setName(""); setColor("#6366f1"); }
-  function startEdit(l: LabelRow) { setEditing(l); setName(l.name); setColor(l.color); }
+  function startNew() { setEditing(null); setName(""); }
+  function startEdit(l: LabelRow) { setEditing(l); setName(l.name); }
 
   async function save() {
     if (!name.trim()) return;
     if (editing) {
-      await supabase.from("labels").update({ name: name.trim(), color }).eq("id", editing.id);
+      await supabase.from("labels").update({ name: name.trim() }).eq("id", editing.id);
     } else {
-      await supabase.from("labels").insert({ name: name.trim(), color });
+      await supabase.from("labels").insert({ name: name.trim(), color: DEFAULT_COLOR });
     }
     qc.invalidateQueries({ queryKey: ["labels"] });
     startNew();
@@ -359,15 +361,9 @@ function LabelsManager({ labels }: { labels: LabelRow[] }) {
         </div>
         <div className="border-t border-border pt-4 space-y-3">
           <h3 className="text-sm font-semibold">{editing ? "Editar etiqueta" : "Nova etiqueta"}</h3>
-          <div className="grid grid-cols-[1fr_auto] gap-2 items-end">
-            <div className="space-y-1.5">
-              <Label htmlFor="lname" className="text-xs">Nome</Label>
-              <Input id="lname" value={name} onChange={(e) => setName(e.target.value)} maxLength={40} />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="lcolor" className="text-xs">Cor</Label>
-              <input id="lcolor" type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-10 w-14 rounded border border-border bg-transparent cursor-pointer" />
-            </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="lname" className="text-xs">Nome</Label>
+            <Input id="lname" value={name} onChange={(e) => setName(e.target.value)} maxLength={40} onKeyDown={(e) => e.key === "Enter" && save()} />
           </div>
           <DialogFooter className="gap-2">
             {editing && <Button variant="ghost" onClick={startNew}>Cancelar</Button>}
