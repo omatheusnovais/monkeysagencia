@@ -464,7 +464,7 @@ function ServicesSection() {
     { Icon: Target, service: "Meta Ads", desc: "Campanhas que enchem seu WhatsApp de leads quentes." },
     { Icon: Search, service: "Google Ads", desc: "Apareça na hora em que o cliente já quer comprar." },
     { Icon: LayoutTemplate, service: "Landing Pages", desc: "Páginas que convertem 2 a 5x mais que o seu site atual." },
-    { Icon: Bot, service: "IA de qualificação", desc: "Atende, qualifica e agenda 24/7, sem perder lead às 22h." },
+    { Icon: Bot, service: "Atendimento qualificado", desc: "Roteiros e fluxo no WhatsApp para qualificar e agendar reuniões." },
     { Icon: Database, service: "CRM + Automação", desc: "Follow-up automático que recupera quem ia escapar." },
     { Icon: BarChart3, service: "Relatórios claros", desc: "Você vê o ROI da sua verba toda semana, sem achismo." },
   ];
