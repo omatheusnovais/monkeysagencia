@@ -251,7 +251,7 @@ function Hero() {
                 aria-label="Quero minha análise gratuita de tráfego"
               >
                 <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-                Quero Minha Análise Gratuita
+                Quero meu diagnóstico gratuito
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </a>
               <a
