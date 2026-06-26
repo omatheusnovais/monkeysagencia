@@ -53,6 +53,8 @@ import {
   Sun,
   Moon,
   Calendar,
+  Newspaper,
+  ExternalLink,
 
 
 
