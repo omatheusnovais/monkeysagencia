@@ -727,22 +727,12 @@ function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: bool
                 <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label className="text-xs">Status</Label>
-                <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as Lead["status"] })}
-                  className="w-full h-9 rounded-md border border-input bg-background px-2 text-sm">
-                  {COLUMNS.map((c) => <option key={c.key} value={c.key}>{c.title}</option>)}
-                </select>
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs">Etiqueta</Label>
-                <select value={form.label_id} onChange={(e) => setForm({ ...form, label_id: e.target.value })}
-                  className="w-full h-9 rounded-md border border-input bg-background px-2 text-sm">
-                  <option value="">Sem etiqueta</option>
-                  {labels.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
-                </select>
-              </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Status</Label>
+              <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as Lead["status"] })}
+                className="w-full h-9 rounded-md border border-input bg-background px-2 text-sm">
+                {COLUMNS.map((c) => <option key={c.key} value={c.key}>{c.title}</option>)}
+              </select>
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">Empresa</Label>
