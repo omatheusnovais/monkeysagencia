@@ -443,6 +443,48 @@ function Column({ col, leads, labels }: { col: { key: Status; title: string; dot
   );
 }
 
+function NewsPanel() {
+  const fetchNews = useServerFn(getMarketingNews);
+  const newsQ = useQuery({
+    queryKey: ["marketing-news"],
+    queryFn: () => fetchNews({}),
+    staleTime: 1000 * 60 * 60 * 6,
+  });
+  const items = newsQ.data?.items ?? [];
+  return (
+    <div className="rounded-2xl bg-card border border-border p-6">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2 text-[11px] font-semibold tracking-wider text-muted-foreground">
+          <Newspaper className="size-3.5" /> NOTÍCIAS DE MARKETING & TRÁFEGO
+        </div>
+        {newsQ.isFetching && <RefreshCw className="size-3 animate-spin text-muted-foreground" />}
+      </div>
+      {newsQ.isLoading ? (
+        <div className="space-y-2">
+          {[0, 1, 2, 3, 4].map((i) => <div key={i} className="h-4 rounded bg-muted animate-pulse" />)}
+        </div>
+      ) : items.length === 0 ? (
+        <p className="text-sm text-muted-foreground">Sem notícias disponíveis no momento.</p>
+      ) : (
+        <ul className="space-y-3">
+          {items.map((n, i) => (
+            <li key={i}>
+              <a href={n.link} target="_blank" rel="noreferrer"
+                className="group flex items-start gap-2 text-sm hover:text-primary transition-colors">
+                <ExternalLink className="size-3.5 mt-0.5 shrink-0 text-muted-foreground group-hover:text-primary" />
+                <span className="flex-1">
+                  <span className="line-clamp-2">{n.title}</span>
+                  <span className="text-[11px] text-muted-foreground">{n.source}</span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 function DraggableCard({ lead, labels }: { lead: Lead; labels: LabelRow[] }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: lead.id });
   const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` } : undefined;
