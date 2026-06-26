@@ -6,12 +6,14 @@ import { seedAdmin } from "@/lib/admin.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Lock } from "lucide-react";
+import { Lock, Quote } from "lucide-react";
+import { getDailyQuote } from "@/lib/quotes";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
   head: () => ({ meta: [{ title: "Admin · Login" }] }),
 });
+
 
 function LoginPage() {
   const navigate = useNavigate();
