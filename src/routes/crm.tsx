@@ -786,6 +786,16 @@ function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: bool
                 <Input value={form.investimento} onChange={(e) => setForm({ ...form, investimento: e.target.value })} />
               </div>
             </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs">Valor do contrato</Label>
+                <Input placeholder="R$ 0,00" value={form.valorContrato} onChange={(e) => setForm({ ...form, valorContrato: e.target.value })} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Início do contrato</Label>
+                <Input type="date" value={form.inicioContrato} onChange={(e) => setForm({ ...form, inicioContrato: e.target.value })} />
+              </div>
+            </div>
 
             <DialogFooter className="gap-2">
               <Button variant="ghost" onClick={() => setEditing(false)}>Cancelar</Button>
