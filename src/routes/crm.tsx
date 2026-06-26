@@ -621,6 +621,7 @@ function NewLeadDialog() {
 }
 
 function LeadDetailDialog({ lead, labels, open, onOpenChange }: { lead: Lead; labels: LabelRow[]; open: boolean; onOpenChange: (o: boolean) => void }) {
+  const qc = useQueryClient();
   const label = labels.find((l) => l.id === lead.label_id);
   const parsed: Record<string, string> = {};
   (lead.message ?? "").split("\n").forEach((line) => {
@@ -640,71 +641,207 @@ function LeadDetailDialog({ lead, labels, open, onOpenChange }: { lead: Lead; la
   ].filter(([, v]) => v) as [string, string][];
   const statusTitle = COLUMNS.find((c) => c.key === lead.status)?.title ?? lead.status;
 
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({
+    name: lead.name,
+    email: lead.email ?? "",
+    phone: lead.phone ?? "",
+    status: lead.status,
+    label_id: lead.label_id ?? "",
+    company: parsed["Empresa"] ?? "",
+    faturamento: parsed["Faturamento mensal"] ?? parsed["Faturamento"] ?? "",
+    investimento: parsed["Investimento"] ?? "",
+    note: parsed["Anotação"] ?? parsed["Anotacao"] ?? "",
+  });
+
+  useEffect(() => {
+    setEditing(false);
+    const p: Record<string, string> = {};
+    (lead.message ?? "").split("\n").forEach((line) => {
+      const i = line.indexOf(":");
+      if (i > 0) {
+        const k = line.slice(0, i).trim();
+        const v = line.slice(i + 1).trim();
+        if (k && v) p[k] = v;
+      }
+    });
+    setForm({
+      name: lead.name,
+      email: lead.email ?? "",
+      phone: lead.phone ?? "",
+      status: lead.status,
+      label_id: lead.label_id ?? "",
+      company: p["Empresa"] ?? "",
+      faturamento: p["Faturamento mensal"] ?? p["Faturamento"] ?? "",
+      investimento: p["Investimento"] ?? "",
+      note: p["Anotação"] ?? p["Anotacao"] ?? "",
+    });
+  }, [lead]);
+
+  async function saveEdit() {
+    if (!form.name.trim()) return;
+    setSaving(true);
+    const lines: string[] = [];
+    if (form.company.trim()) lines.push(`Empresa: ${form.company.trim()}`);
+    if (form.faturamento.trim()) lines.push(`Faturamento mensal: ${form.faturamento.trim()}`);
+    if (form.investimento.trim()) lines.push(`Investimento: ${form.investimento.trim()}`);
+    if (form.note.trim()) lines.push(`Anotação: ${form.note.trim()}`);
+    const { error } = await supabase.from("leads").update({
+      name: form.name.trim(),
+      email: form.email.trim() || null,
+      phone: form.phone.trim() || null,
+      status: form.status,
+      label_id: form.label_id || null,
+      message: lines.length ? lines.join("\n") : null,
+    }).eq("id", lead.id);
+    setSaving(false);
+    if (error) { alert("Erro ao salvar: " + error.message); return; }
+    qc.invalidateQueries({ queryKey: ["leads"] });
+    setEditing(false);
+  }
+
+  async function remove() {
+    if (!confirm("Excluir este lead?")) return;
+    const { error } = await supabase.from("leads").delete().eq("id", lead.id);
+    if (error) { alert("Erro ao excluir: " + error.message); return; }
+    qc.invalidateQueries({ queryKey: ["leads"] });
+    onOpenChange(false);
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="font-display text-xl">{lead.name}</DialogTitle>
+          <DialogTitle className="font-display text-xl">{editing ? "Editar lead" : lead.name}</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4 text-sm">
-          <div className="flex flex-wrap gap-2">
-            <span className="text-xs px-2.5 py-1 rounded-full bg-muted">{statusTitle}</span>
-            {label && (
-              <span className="text-xs px-2.5 py-1 rounded-full inline-flex items-center gap-1"
-                style={{ backgroundColor: label.color + "22", color: label.color }}>
-                <Tag className="size-3" />{label.name}
-              </span>
-            )}
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Field icon={<Mail className="size-3.5" />} label="Email" value={lead.email ?? "—"} />
-            <Field icon={<Phone className="size-3.5" />} label="WhatsApp / Telefone" value={lead.phone ?? "—"} />
-          </div>
-
-          {Object.keys(parsed).length > 0 && (
-            <div className="rounded-lg border border-border p-3 space-y-2">
-              <h4 className="text-xs font-semibold tracking-wider text-muted-foreground">RESPOSTAS DO DIAGNÓSTICO</h4>
-              {Object.entries(parsed).map(([k, v]) => (
-                <div key={k} className="flex justify-between gap-3 text-sm">
-                  <span className="text-muted-foreground">{k}</span>
-                  <span className="font-medium text-right">{v}</span>
-                </div>
-              ))}
+        {editing ? (
+          <div className="space-y-3 text-sm">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Nome *</Label>
+              <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             </div>
-          )}
-
-          {utms.length > 0 && (
-            <div className="rounded-lg border border-border p-3 space-y-1.5">
-              <h4 className="text-xs font-semibold tracking-wider text-muted-foreground">ORIGEM (UTMs)</h4>
-              {utms.map(([k, v]) => (
-                <div key={k} className="flex justify-between gap-3 text-xs">
-                  <span className="text-muted-foreground">{k}</span>
-                  <span className="font-mono">{v}</span>
-                </div>
-              ))}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs">WhatsApp</Label>
+                <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Email</Label>
+                <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+              </div>
             </div>
-          )}
-
-          <div className="text-xs text-muted-foreground">
-            Criado em {new Date(lead.created_at).toLocaleString("pt-BR")}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs">Status</Label>
+                <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as Lead["status"] })}
+                  className="w-full h-9 rounded-md border border-input bg-background px-2 text-sm">
+                  {COLUMNS.map((c) => <option key={c.key} value={c.key}>{c.title}</option>)}
+                </select>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Etiqueta</Label>
+                <select value={form.label_id} onChange={(e) => setForm({ ...form, label_id: e.target.value })}
+                  className="w-full h-9 rounded-md border border-input bg-background px-2 text-sm">
+                  <option value="">Sem etiqueta</option>
+                  {labels.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
+                </select>
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Empresa</Label>
+              <Input value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs">Faturamento mensal</Label>
+                <Input value={form.faturamento} onChange={(e) => setForm({ ...form, faturamento: e.target.value })} />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Investimento</Label>
+                <Input value={form.investimento} onChange={(e) => setForm({ ...form, investimento: e.target.value })} />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Anotação</Label>
+              <textarea value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} rows={3}
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
+            </div>
+            <DialogFooter className="gap-2">
+              <Button variant="ghost" onClick={() => setEditing(false)}>Cancelar</Button>
+              <Button onClick={saveEdit} disabled={saving || !form.name.trim()}>
+                {saving ? "Salvando..." : "Salvar alterações"}
+              </Button>
+            </DialogFooter>
           </div>
+        ) : (
+          <div className="space-y-4 text-sm">
+            <div className="flex flex-wrap gap-2">
+              <span className="text-xs px-2.5 py-1 rounded-full bg-muted">{statusTitle}</span>
+              {label && (
+                <span className="text-xs px-2.5 py-1 rounded-full inline-flex items-center gap-1"
+                  style={{ backgroundColor: label.color + "22", color: label.color }}>
+                  <Tag className="size-3" />{label.name}
+                </span>
+              )}
+            </div>
 
-          <div className="flex flex-wrap gap-2 pt-2">
-            {lead.phone && (
-              <a href={`https://wa.me/${lead.phone.replace(/\D/g, "")}`} target="_blank" rel="noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-emerald-500 text-white hover:bg-emerald-600">
-                <Phone className="size-3.5" /> Abrir WhatsApp
-              </a>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Field icon={<Mail className="size-3.5" />} label="Email" value={lead.email ?? "—"} />
+              <Field icon={<Phone className="size-3.5" />} label="WhatsApp / Telefone" value={lead.phone ?? "—"} />
+            </div>
+
+            {Object.keys(parsed).length > 0 && (
+              <div className="rounded-lg border border-border p-3 space-y-2">
+                <h4 className="text-xs font-semibold tracking-wider text-muted-foreground">RESPOSTAS DO DIAGNÓSTICO</h4>
+                {Object.entries(parsed).map(([k, v]) => (
+                  <div key={k} className="flex justify-between gap-3 text-sm">
+                    <span className="text-muted-foreground">{k}</span>
+                    <span className="font-medium text-right">{v}</span>
+                  </div>
+                ))}
+              </div>
             )}
-            {lead.email && (
-              <a href={`mailto:${lead.email}`}
-                className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
-                <Mail className="size-3.5" /> Enviar email
-              </a>
+
+            {utms.length > 0 && (
+              <div className="rounded-lg border border-border p-3 space-y-1.5">
+                <h4 className="text-xs font-semibold tracking-wider text-muted-foreground">ORIGEM (UTMs)</h4>
+                {utms.map(([k, v]) => (
+                  <div key={k} className="flex justify-between gap-3 text-xs">
+                    <span className="text-muted-foreground">{k}</span>
+                    <span className="font-mono">{v}</span>
+                  </div>
+                ))}
+              </div>
             )}
+
+            <div className="text-xs text-muted-foreground">
+              Criado em {new Date(lead.created_at).toLocaleString("pt-BR")}
+            </div>
+
+            <div className="flex flex-wrap gap-2 pt-2">
+              <Button size="sm" variant="outline" onClick={() => setEditing(true)}>
+                <Pencil className="size-3.5 mr-1" /> Editar
+              </Button>
+              <Button size="sm" variant="outline" onClick={remove} className="text-destructive hover:text-destructive">
+                <Trash2 className="size-3.5 mr-1" /> Excluir
+              </Button>
+              {lead.phone && (
+                <a href={`https://wa.me/${lead.phone.replace(/\D/g, "")}`} target="_blank" rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md bg-emerald-500 text-white hover:bg-emerald-600">
+                  <Phone className="size-3.5" /> WhatsApp
+                </a>
+              )}
+              {lead.email && (
+                <a href={`mailto:${lead.email}`}
+                  className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90">
+                  <Mail className="size-3.5" /> Email
+                </a>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </DialogContent>
     </Dialog>
   );
