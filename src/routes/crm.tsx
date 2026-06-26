@@ -706,11 +706,7 @@ function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: bool
                 <Input value={form.investimento} onChange={(e) => setForm({ ...form, investimento: e.target.value })} />
               </div>
             </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs">Anotação</Label>
-              <textarea value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} rows={3}
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-            </div>
+
             <DialogFooter className="gap-2">
               <Button variant="ghost" onClick={() => setEditing(false)}>Cancelar</Button>
               <Button onClick={saveEdit} disabled={saving || !form.name.trim()}>
