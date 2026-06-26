@@ -14,6 +14,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription,
 } from "@/components/ui/dialog";
 import monkeysLogo from "@/assets/monkeys-logo.png.asset.json";
+import matheusPhoto from "@/assets/matheus-palco.png.asset.json";
 
 const WHATSAPP_URL = `https://wa.me/5562993519901?text=${encodeURIComponent("Olá vim pela Landing Page e gostaria de agendar uma reunião!")}`;
 const INSTAGRAM_AGENCY = "https://www.instagram.com/monkeys.agencia";
@@ -645,9 +646,12 @@ function AboutSection() {
             <div className="relative">
               <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-[#4F7CFF]/30 to-[#8B5CF6]/30 blur-3xl" />
               <div className="relative aspect-square w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/10 to-transparent backdrop-blur">
-                <div className="grid h-full w-full place-items-center">
-                  <Gauge className="h-32 w-32 text-[#4F7CFF]" strokeWidth={1} />
-                </div>
+                <img
+                  src={matheusPhoto.url}
+                  alt="Matheus Novais palestrando"
+                  className="h-full w-full object-cover object-top"
+                />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#080808]/60 via-transparent to-transparent" />
               </div>
             </div>
           </motion.div>
