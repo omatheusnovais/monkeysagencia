@@ -475,27 +475,22 @@ function NewsPanel() {
   );
 }
 
-function DraggableCard({ lead, labels }: { lead: Lead; labels: LabelRow[] }) {
+function DraggableCard({ lead }: { lead: Lead }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: lead.id });
   const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` } : undefined;
   return (
     <div ref={setNodeRef} style={style} {...listeners} {...attributes} className={isDragging ? "opacity-30" : ""}>
-      <LeadCard lead={lead} labels={labels} />
+      <LeadCard lead={lead} />
     </div>
   );
 }
 
-function LeadCard({ lead, labels, dragging }: { lead: Lead; labels: LabelRow[]; dragging?: boolean }) {
+function LeadCard({ lead, dragging }: { lead: Lead; dragging?: boolean }) {
   const qc = useQueryClient();
   const [detailOpen, setDetailOpen] = useState(false);
-  const label = labels.find((l) => l.id === lead.label_id);
   const company = lead.message?.split("\n").find((line) => line.toLowerCase().includes("empresa"))?.split(":")[1]?.trim();
   const dateStr = new Date(lead.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
 
-  async function setLabel(label_id: string | null) {
-    await supabase.from("leads").update({ label_id }).eq("id", lead.id);
-    qc.invalidateQueries({ queryKey: ["leads"] });
-  }
   async function remove() {
     if (!confirm("Excluir este lead?")) return;
     await supabase.from("leads").delete().eq("id", lead.id);
@@ -515,12 +510,6 @@ function LeadCard({ lead, labels, dragging }: { lead: Lead; labels: LabelRow[]; 
               <button onClick={(e) => e.stopPropagation()} className="p-1 hover:bg-muted rounded" aria-label="Ações"><MoreVertical className="size-4" /></button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" onPointerDown={(e) => e.stopPropagation()}>
-              <DropdownMenuItem onSelect={() => setLabel(null)}>Sem etiqueta</DropdownMenuItem>
-              {labels.map((l) => (
-                <DropdownMenuItem key={l.id} onSelect={() => setLabel(l.id)}>
-                  <span className="size-2 rounded-full mr-2" style={{ background: l.color }} />{l.name}
-                </DropdownMenuItem>
-              ))}
               <DropdownMenuItem onSelect={remove} className="text-destructive">
                 <Trash2 className="size-4 mr-2" /> Excluir
               </DropdownMenuItem>
@@ -528,11 +517,6 @@ function LeadCard({ lead, labels, dragging }: { lead: Lead; labels: LabelRow[]; 
           </DropdownMenu>
         </div>
         {company && <p className="text-xs text-muted-foreground uppercase tracking-wide mt-0.5">{company}</p>}
-        {label && (
-          <Badge style={{ backgroundColor: label.color + "22", color: label.color, borderColor: label.color + "55" }} variant="outline" className="mt-2">
-            <Tag className="size-3 mr-1" />{label.name}
-          </Badge>
-        )}
         <div className="space-y-1.5 text-xs text-muted-foreground mt-3">
           {lead.email && <div className="flex items-center gap-1.5"><Mail className="size-3.5 text-primary" /><span className="truncate">{lead.email}</span></div>}
           {lead.phone && <div className="flex items-center gap-1.5"><Phone className="size-3.5 text-emerald-500" />{lead.phone}</div>}
@@ -542,10 +526,11 @@ function LeadCard({ lead, labels, dragging }: { lead: Lead; labels: LabelRow[]; 
           <span className="text-muted-foreground inline-flex items-center gap-1"><Calendar className="size-3" /> {dateStr}</span>
         </div>
       </div>
-      {!dragging && <LeadDetailDialog lead={lead} labels={labels} open={detailOpen} onOpenChange={setDetailOpen} />}
+      {!dragging && <LeadDetailDialog lead={lead} open={detailOpen} onOpenChange={setDetailOpen} />}
     </>
   );
 }
+
 
 
 function LabelsManager({ labels }: { labels: LabelRow[] }) {
