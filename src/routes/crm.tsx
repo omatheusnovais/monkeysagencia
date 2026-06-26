@@ -112,7 +112,15 @@ function CrmPage() {
   const [ready, setReady] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [view, setView] = useState<"kanban">("kanban");
+  const [view, setView] = useState<"kanban" | "stats">("kanban");
+  const [ticketMedio, setTicketMedio] = useState<number>(() => {
+    if (typeof window === "undefined") return 0;
+    return Number(localStorage.getItem("crm-ticket-medio") || 0);
+  });
+  function saveTicket(v: number) {
+    setTicketMedio(v);
+    localStorage.setItem("crm-ticket-medio", String(v));
+  }
   const { theme, toggle } = useTheme();
 
   useEffect(() => {
@@ -287,6 +295,7 @@ function CrmPage() {
           <div className="flex items-center justify-between gap-3 rounded-2xl bg-card border border-border px-3 py-2">
             <div className="flex items-center gap-1">
               <TabBtn active={view === "kanban"} onClick={() => setView("kanban")} icon={<LayoutGrid className="size-4" />} label="KANBAN" />
+              <TabBtn active={view === "stats"} onClick={() => setView("stats")} icon={<PieChart className="size-4" />} label="ESTATÍSTICAS" />
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" className="rounded-full"><Filter className="size-4 mr-1" /> FILTRAR</Button>
@@ -314,6 +323,15 @@ function CrmPage() {
             </DndContext>
           )}
 
+          {view === "stats" && (
+            <StatsPanel
+              vendas={totals.vendas}
+              total={totals.total}
+              ticketMedio={ticketMedio}
+              onTicketChange={saveTicket}
+            />
+          )}
+
         </main>
       </div>
     </div>
@@ -327,6 +345,47 @@ function KpiCard({ color, label, value, active }: { color: string; label: string
       <div className="min-w-0">
         <div className="text-[11px] tracking-wider font-semibold text-muted-foreground">{label}</div>
         <div className="text-2xl font-bold leading-tight">{value}</div>
+      </div>
+    </div>
+  );
+}
+
+function StatsPanel({ vendas, total, ticketMedio, onTicketChange }: { vendas: number; total: number; ticketMedio: number; onTicketChange: (v: number) => void }) {
+  const conv = total > 0 ? (vendas / total) * 100 : 0;
+  const receita = vendas * ticketMedio;
+  const fmt = (n: number) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  return (
+    <div className="rounded-2xl bg-card border border-border p-6 space-y-6">
+      <div>
+        <h2 className="text-lg font-bold font-display">Estatísticas</h2>
+        <p className="text-sm text-muted-foreground">Métricas calculadas a partir dos leads no funil.</p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="rounded-xl border border-border p-5">
+          <div className="text-[11px] tracking-wider font-semibold text-muted-foreground">TAXA DE CONVERSÃO</div>
+          <div className="text-3xl font-bold mt-2">{conv.toFixed(1)}%</div>
+          <div className="text-xs text-muted-foreground mt-1">{vendas} de {total} leads</div>
+        </div>
+        <div className="rounded-xl border border-border p-5">
+          <div className="text-[11px] tracking-wider font-semibold text-muted-foreground">TICKET MÉDIO</div>
+          <div className="text-3xl font-bold mt-2">{fmt(ticketMedio)}</div>
+          <div className="mt-3">
+            <Label className="text-xs">Definir ticket médio (R$)</Label>
+            <Input
+              type="number"
+              min={0}
+              value={ticketMedio || ""}
+              onChange={(e) => onTicketChange(Number(e.target.value) || 0)}
+              className="mt-1"
+              placeholder="0,00"
+            />
+          </div>
+        </div>
+        <div className="rounded-xl border border-border p-5">
+          <div className="text-[11px] tracking-wider font-semibold text-muted-foreground">RECEITA TOTAL</div>
+          <div className="text-3xl font-bold mt-2">{fmt(receita)}</div>
+          <div className="text-xs text-muted-foreground mt-1">{vendas} venda(s) × ticket médio</div>
+        </div>
       </div>
     </div>
   );
