@@ -664,10 +664,10 @@ function AboutSection() {
 function OfferSection() {
   const [sent, setSent] = useState(false);
   const items = [
-    "Diagnóstico completo do seu tráfego atual",
-    "Auditoria das campanhas e landing pages",
-    "Oportunidades de melhoria identificadas",
-    "Plano de ação personalizado",
+    "Auditoria gratuita das suas campanhas e LP atuais",
+    "Onde sua verba está vazando (em R$) e como tampar",
+    "Projeção realista de leads e CPA para o seu nicho",
+    "Plano de ação de 30 dias — leva mesmo se não fechar",
   ];
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
