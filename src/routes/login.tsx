@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Lock } from "lucide-react";
 
-export const Route = createFileRoute("/admin/login")({
+export const Route = createFileRoute("/login")({
   component: LoginPage,
   head: () => ({ meta: [{ title: "Admin · Login" }] }),
 });
@@ -24,7 +24,7 @@ function LoginPage() {
   useEffect(() => {
     seed({}).catch(() => {});
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/admin/crm" });
+      if (data.session) navigate({ to: "/crm" });
     });
   }, []);
 
@@ -39,7 +39,7 @@ function LoginPage() {
       setError("Usuário ou senha inválidos");
       return;
     }
-    navigate({ to: "/admin/crm" });
+    navigate({ to: "/crm" });
   }
 
   return (
