@@ -864,7 +864,7 @@ function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: bool
               </div>
 
               {/* COLUNA DIREITA - ANOTAÇÕES */}
-              <div className="rounded-lg border border-border p-3 space-y-3 bg-[#ece5dd] dark:bg-muted/40 lg:sticky lg:top-0 h-full">
+              <div className="rounded-lg border border-border p-3 space-y-3 bg-[#ece5dd] dark:bg-muted/40 md:sticky md:top-0 h-full">
                 <h4 className="text-xs font-semibold tracking-wider text-muted-foreground">ANOTAÇÕES</h4>
                 <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
                   {notes.length === 0 ? (
