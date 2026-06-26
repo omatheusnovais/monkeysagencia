@@ -22,8 +22,9 @@ export function initPixel() {
     s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
   })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
   /* eslint-enable */
-  (window.fbq as (...args: unknown[]) => void)("init", FB_PIXEL_ID);
-  (window.fbq as (...args: unknown[]) => void)("track", "PageView");
+  const fbq = window.fbq as unknown as (...args: unknown[]) => void;
+  fbq("init", FB_PIXEL_ID);
+  fbq("track", "PageView");
 }
 
 export function fbTrack(event: string, params?: Record<string, unknown>) {
