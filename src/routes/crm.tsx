@@ -415,6 +415,7 @@ function DraggableCard({ lead, labels }: { lead: Lead; labels: LabelRow[] }) {
 
 function LeadCard({ lead, labels, dragging }: { lead: Lead; labels: LabelRow[]; dragging?: boolean }) {
   const qc = useQueryClient();
+  const [detailOpen, setDetailOpen] = useState(false);
   const label = labels.find((l) => l.id === lead.label_id);
   const company = lead.message?.split("\n").find((line) => line.toLowerCase().includes("empresa"))?.split(":")[1]?.trim();
   const dateStr = new Date(lead.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
@@ -430,43 +431,50 @@ function LeadCard({ lead, labels, dragging }: { lead: Lead; labels: LabelRow[]; 
   }
 
   return (
-    <div className={`rounded-xl border border-border bg-background p-4 shadow-sm hover:shadow-md transition cursor-grab active:cursor-grabbing ${dragging ? "shadow-2xl ring-2 ring-primary/50" : ""}`}>
-      <div className="flex items-start justify-between gap-2">
-        <h3 className="font-bold text-sm uppercase tracking-wide truncate font-display">{lead.name}</h3>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild onPointerDown={(e) => e.stopPropagation()}>
-            <button className="p-1 hover:bg-muted rounded" aria-label="Ações"><MoreVertical className="size-4" /></button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" onPointerDown={(e) => e.stopPropagation()}>
-            <DropdownMenuItem onSelect={() => setLabel(null)}>Sem etiqueta</DropdownMenuItem>
-            {labels.map((l) => (
-              <DropdownMenuItem key={l.id} onSelect={() => setLabel(l.id)}>
-                <span className="size-2 rounded-full mr-2" style={{ background: l.color }} />{l.name}
+    <>
+      <div
+        onClick={() => { if (!dragging) setDetailOpen(true); }}
+        className={`rounded-xl border border-border bg-background p-4 shadow-sm hover:shadow-md transition cursor-grab active:cursor-grabbing ${dragging ? "shadow-2xl ring-2 ring-primary/50" : ""}`}
+      >
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="font-bold text-sm uppercase tracking-wide truncate font-display">{lead.name}</h3>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild onPointerDown={(e) => e.stopPropagation()}>
+              <button onClick={(e) => e.stopPropagation()} className="p-1 hover:bg-muted rounded" aria-label="Ações"><MoreVertical className="size-4" /></button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" onPointerDown={(e) => e.stopPropagation()}>
+              <DropdownMenuItem onSelect={() => setLabel(null)}>Sem etiqueta</DropdownMenuItem>
+              {labels.map((l) => (
+                <DropdownMenuItem key={l.id} onSelect={() => setLabel(l.id)}>
+                  <span className="size-2 rounded-full mr-2" style={{ background: l.color }} />{l.name}
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuItem onSelect={remove} className="text-destructive">
+                <Trash2 className="size-4 mr-2" /> Excluir
               </DropdownMenuItem>
-            ))}
-            <DropdownMenuItem onSelect={remove} className="text-destructive">
-              <Trash2 className="size-4 mr-2" /> Excluir
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        {company && <p className="text-xs text-muted-foreground uppercase tracking-wide mt-0.5">{company}</p>}
+        {label && (
+          <Badge style={{ backgroundColor: label.color + "22", color: label.color, borderColor: label.color + "55" }} variant="outline" className="mt-2">
+            <Tag className="size-3 mr-1" />{label.name}
+          </Badge>
+        )}
+        <div className="space-y-1.5 text-xs text-muted-foreground mt-3">
+          {lead.email && <div className="flex items-center gap-1.5"><Mail className="size-3.5 text-primary" /><span className="truncate">{lead.email}</span></div>}
+          {lead.phone && <div className="flex items-center gap-1.5"><Phone className="size-3.5 text-emerald-500" />{lead.phone}</div>}
+        </div>
+        <div className="mt-3 pt-3 border-t border-border flex items-center justify-between text-xs">
+          <span className="font-bold">R$ 0,00</span>
+          <span className="text-muted-foreground inline-flex items-center gap-1"><Calendar className="size-3" /> {dateStr}</span>
+        </div>
       </div>
-      {company && <p className="text-xs text-muted-foreground uppercase tracking-wide mt-0.5">{company}</p>}
-      {label && (
-        <Badge style={{ backgroundColor: label.color + "22", color: label.color, borderColor: label.color + "55" }} variant="outline" className="mt-2">
-          <Tag className="size-3 mr-1" />{label.name}
-        </Badge>
-      )}
-      <div className="space-y-1.5 text-xs text-muted-foreground mt-3">
-        {lead.email && <div className="flex items-center gap-1.5"><Mail className="size-3.5 text-primary" /><span className="truncate">{lead.email}</span></div>}
-        {lead.phone && <div className="flex items-center gap-1.5"><Phone className="size-3.5 text-emerald-500" />{lead.phone}</div>}
-      </div>
-      <div className="mt-3 pt-3 border-t border-border flex items-center justify-between text-xs">
-        <span className="font-bold">R$ 0,00</span>
-        <span className="text-muted-foreground inline-flex items-center gap-1"><Calendar className="size-3" /> {dateStr}</span>
-      </div>
-    </div>
+      {!dragging && <LeadDetailDialog lead={lead} labels={labels} open={detailOpen} onOpenChange={setDetailOpen} />}
+    </>
   );
 }
+
 
 function LabelsManager({ labels }: { labels: LabelRow[] }) {
   const qc = useQueryClient();
