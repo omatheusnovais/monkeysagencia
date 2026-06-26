@@ -533,66 +533,6 @@ function LeadCard({ lead, dragging }: { lead: Lead; dragging?: boolean }) {
 
 
 
-function LabelsManager({ labels }: { labels: LabelRow[] }) {
-  const qc = useQueryClient();
-  const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<LabelRow | null>(null);
-  const [name, setName] = useState("");
-  const DEFAULT_COLOR = "#ffcc00";
-
-  function startNew() { setEditing(null); setName(""); }
-  function startEdit(l: LabelRow) { setEditing(l); setName(l.name); }
-
-  async function save() {
-    if (!name.trim()) return;
-    if (editing) {
-      await supabase.from("labels").update({ name: name.trim() }).eq("id", editing.id);
-    } else {
-      await supabase.from("labels").insert({ name: name.trim(), color: DEFAULT_COLOR });
-    }
-    qc.invalidateQueries({ queryKey: ["labels"] });
-    startNew();
-  }
-  async function remove(id: string) {
-    if (!confirm("Excluir etiqueta?")) return;
-    await supabase.from("labels").delete().eq("id", id);
-    qc.invalidateQueries({ queryKey: ["labels"] });
-    qc.invalidateQueries({ queryKey: ["leads"] });
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (o) startNew(); }}>
-      <DialogTrigger asChild>
-        <Button variant="outline" className="rounded-full"><Tag className="size-4 mr-1" /> ETIQUETAS</Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-md">
-        <DialogHeader><DialogTitle>Gerenciar etiquetas</DialogTitle></DialogHeader>
-        <div className="space-y-2 max-h-60 overflow-y-auto">
-          {labels.length === 0 && <p className="text-sm text-muted-foreground">Nenhuma etiqueta criada.</p>}
-          {labels.map((l) => (
-            <div key={l.id} className="flex items-center gap-2 p-2 rounded-lg border border-border">
-              <span className="size-4 rounded" style={{ background: l.color }} />
-              <span className="flex-1 text-sm">{l.name}</span>
-              <Button size="sm" variant="ghost" onClick={() => startEdit(l)}><Pencil className="size-3.5" /></Button>
-              <Button size="sm" variant="ghost" onClick={() => remove(l.id)}><Trash2 className="size-3.5 text-destructive" /></Button>
-            </div>
-          ))}
-        </div>
-        <div className="border-t border-border pt-4 space-y-3">
-          <h3 className="text-sm font-semibold">{editing ? "Editar etiqueta" : "Nova etiqueta"}</h3>
-          <div className="space-y-1.5">
-            <Label htmlFor="lname" className="text-xs">Nome</Label>
-            <Input id="lname" value={name} onChange={(e) => setName(e.target.value)} maxLength={40} onKeyDown={(e) => e.key === "Enter" && save()} />
-          </div>
-          <DialogFooter className="gap-2">
-            {editing && <Button variant="ghost" onClick={startNew}>Cancelar</Button>}
-            <Button onClick={save}><Plus className="size-4 mr-1" /> {editing ? "Salvar" : "Criar"}</Button>
-          </DialogFooter>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
 function NewLeadDialog() {
   const qc = useQueryClient();
