@@ -669,7 +669,7 @@ function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: bool
 
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({
+  const initialForm = () => ({
     name: lead.name,
     email: lead.email ?? "",
     phone: lead.phone ?? "",
@@ -677,23 +677,32 @@ function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: bool
     company: diagnostic["Empresa"] ?? "",
     faturamento: diagnostic["Faturamento mensal"] ?? diagnostic["Faturamento"] ?? "",
     investimento: diagnostic["Investimento"] ?? "",
+    valorContrato: diagnostic["Valor do contrato"] ?? "",
+    inicioContrato: diagnostic["Início do contrato"] ?? "",
   });
+  const [form, setForm] = useState(initialForm);
 
   useEffect(() => {
     setEditing(false);
-    setForm({
-      name: lead.name,
-      email: lead.email ?? "",
-      phone: lead.phone ?? "",
-      status: lead.status,
-      company: diagnostic["Empresa"] ?? "",
-      faturamento: diagnostic["Faturamento mensal"] ?? diagnostic["Faturamento"] ?? "",
-      investimento: diagnostic["Investimento"] ?? "",
-    });
+    setForm(initialForm());
     setNoteDraft("");
     setEditingNoteId(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lead.id]);
+
+  const valorContrato = diagnostic["Valor do contrato"] ?? "";
+  const inicioContrato = diagnostic["Início do contrato"] ?? "";
+  const vencimentoContrato = useMemo(() => {
+    if (!inicioContrato) return "";
+    const d = new Date(inicioContrato);
+    if (isNaN(d.getTime())) return "";
+    d.setDate(d.getDate() + 90);
+    return d.toISOString().slice(0, 10);
+  }, [inicioContrato]);
+  const fmtDate = (s: string) => {
+    const d = new Date(s);
+    return isNaN(d.getTime()) ? s : d.toLocaleDateString("pt-BR");
+  };
 
   async function saveEdit() {
     if (!form.name.trim()) return;
