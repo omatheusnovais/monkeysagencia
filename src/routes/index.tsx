@@ -716,6 +716,7 @@ function OfferSection() {
     const name = String(fd.get("name") ?? "").trim();
     const company = String(fd.get("company") ?? "").trim();
     const phone = String(fd.get("phone") ?? "").trim();
+    const email = String(fd.get("email") ?? "").trim();
     const faturamento = String(fd.get("faturamento") ?? "");
     const investimento = String(fd.get("investimento") ?? "");
 
@@ -726,6 +727,8 @@ function OfferSection() {
     const { error: err } = await supabase.from("leads").insert({
       name,
       phone,
+      email: email || null,
+
       message,
       status: "novos",
       label_id: null,
