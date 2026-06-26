@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef, useState } from "react";
+import { motion } from "framer-motion";
+import { useState } from "react";
 import {
   ArrowRight, Check, Sparkles, Target, Users, TrendingUp, Bot, BarChart3,
-  Zap, MessageSquare, Search, LayoutTemplate, Brain, Database, LineChart,
-  ChevronDown, Star, Instagram, Phone, Shield, Rocket, Settings, Gauge,
+  Zap, MessageSquare, Search, LayoutTemplate, Brain, Database,
+  Star, Instagram, Phone, Shield, Rocket, Gauge,
 } from "lucide-react";
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
