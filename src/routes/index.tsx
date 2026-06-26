@@ -687,7 +687,7 @@ function OfferSection() {
               <Sparkles className="h-3 w-3" /> Diagnóstico Gratuito
             </div>
             <h2 className="mt-4 text-3xl font-bold leading-tight tracking-tight md:text-4xl">
-              Receba uma Análise Gratuita da Sua <span className="bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] bg-clip-text text-transparent">Performance</span>
+              Descubra em 24h quanto a sua verba pode <span className="bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] bg-clip-text text-transparent">render de verdade</span>
             </h2>
             <ul className="mt-6 space-y-3">
               {items.map(i => (
