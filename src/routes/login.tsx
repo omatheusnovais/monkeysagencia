@@ -6,12 +6,14 @@ import { seedAdmin } from "@/lib/admin.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Lock } from "lucide-react";
+import { Lock, Quote } from "lucide-react";
+import { getDailyQuote } from "@/lib/quotes";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
   head: () => ({ meta: [{ title: "Admin · Login" }] }),
 });
+
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -22,11 +24,17 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // Forçar modo claro na tela de login e no CRM
+    document.documentElement.classList.add("theme-light");
+    localStorage.setItem("crm-theme", "light");
     seed({}).catch(() => {});
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) navigate({ to: "/crm" });
     });
   }, []);
+
+  const quote = getDailyQuote();
+
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -66,6 +74,15 @@ function LoginPage() {
             {loading ? "Entrando..." : "Entrar"}
           </Button>
         </form>
+        <div className="mt-6 rounded-xl border border-border bg-muted/40 p-4">
+          <div className="flex items-start gap-2">
+            <Quote className="size-4 text-primary shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm italic text-foreground leading-relaxed">"{quote.text}"</p>
+              <p className="text-xs text-muted-foreground mt-1">— {quote.author}</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
