@@ -183,7 +183,7 @@ function Hero() {
     "De 5 a 30 leads qualificados por dia",
     "CPA até 60% menor em 60 dias",
     "Atendimento 24/7 com IA que vende por você",
-    "Previsibilidade real — sem depender de indicação",
+    "Previsibilidade real, sem depender de indicação",
   ];
   const stagger = {
     hidden: {},
@@ -236,7 +236,7 @@ function Hero() {
               variants={fadeUp}
               className="mt-7 max-w-xl text-base leading-relaxed text-white/65 md:text-lg"
             >
-              Cansado de gastar com anúncio e não ver retorno? A gente monta o seu sistema de aquisição com <span className="text-white">Meta Ads</span>, <span className="text-white">Google Ads</span>, landing page de alta conversão e IA que qualifica seus leads — para você vender todo dia, sem depender de sorte.
+              Cansado de gastar com anúncio e não ver retorno? A gente monta o seu sistema de aquisição com <span className="text-white">Meta Ads</span>, <span className="text-white">Google Ads</span>, landing page de alta conversão e IA que qualifica seus leads, para você vender todo dia, sem depender de sorte.
             </motion.p>
 
             <motion.ul variants={fadeUp} className="mt-7 grid gap-2.5 sm:grid-cols-2">
@@ -376,7 +376,7 @@ function ResultsSection() {
 
 function ProblemSection() {
   const cards = [
-    { Icon: Target, title: "Anúncio que não vende", description: "Você paga pelo clique, mas o lead some no meio do caminho — e o boleto do tráfego chega igual." },
+    { Icon: Target, title: "Anúncio que não vende", description: "Você paga pelo clique, mas o lead some no meio do caminho, e o boleto do tráfego chega igual." },
     { Icon: Users, title: "Leads que enrolam", description: "Curioso que pede preço, some no WhatsApp e nunca fecha. Seu time perde tempo, você perde dinheiro." },
     { Icon: TrendingUp, title: "Mês bom, mês ruim", description: "Sem previsibilidade, planejar contratação, estoque ou caixa vira aposta. Crescer assim cansa." },
   ];
@@ -416,7 +416,7 @@ function ProblemSection() {
 
 function SolutionSection() {
   const steps = [
-    { step: 1, title: "Diagnóstico em 24h", desc: "Auditamos suas campanhas, LP e funil — e mostramos onde está vazando dinheiro.", Icon: Search },
+    { step: 1, title: "Diagnóstico em 24h", desc: "Auditamos suas campanhas, LP e funil, e mostramos onde está vazando dinheiro.", Icon: Search },
     { step: 2, title: "Estratégia sob medida", desc: "Criamos oferta, criativos e landing page validados para o seu nicho.", Icon: Brain },
     { step: 3, title: "Lançamento em até 7 dias", desc: "Subimos campanhas, integramos CRM e IA e começamos a captar leads.", Icon: Rocket },
     { step: 4, title: "Otimização e escala", desc: "Acompanhamento diário, relatórios semanais e crescimento composto.", Icon: TrendingUp },
@@ -464,7 +464,7 @@ function ServicesSection() {
     { Icon: Target, service: "Meta Ads", desc: "Campanhas que enchem seu WhatsApp de leads quentes." },
     { Icon: Search, service: "Google Ads", desc: "Apareça na hora em que o cliente já quer comprar." },
     { Icon: LayoutTemplate, service: "Landing Pages", desc: "Páginas que convertem 2 a 5x mais que o seu site atual." },
-    { Icon: Bot, service: "IA de qualificação", desc: "Atende, qualifica e agenda 24/7 — sem perder lead às 22h." },
+    { Icon: Bot, service: "IA de qualificação", desc: "Atende, qualifica e agenda 24/7, sem perder lead às 22h." },
     { Icon: Database, service: "CRM + Automação", desc: "Follow-up automático que recupera quem ia escapar." },
     { Icon: BarChart3, service: "Relatórios claros", desc: "Você vê o ROI da sua verba toda semana, sem achismo." },
   ];
@@ -657,7 +657,7 @@ function AboutSection() {
               Especialista em <span className="bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] bg-clip-text text-transparent">Performance</span>
             </h2>
             <p className="mt-6 text-white/70">
-              Há mais de 5 anos a gente só faz uma coisa: transformar verba de tráfego em cliente pagante. Já passaram pelas nossas mãos +R$ 2,1 milhões em mídia e mais de 150 operações — de clínicas locais a SaaS B2B.
+              Há mais de 5 anos a gente só faz uma coisa: transformar verba de tráfego em cliente pagante. Já passaram pelas nossas mãos +R$ 2,1 milhões em mídia e mais de 150 operações, de clínicas locais a SaaS B2B.
             </p>
             <div className="mt-8 grid grid-cols-3 gap-3">
               {[
@@ -684,7 +684,7 @@ function OfferSection() {
     "Auditoria gratuita das suas campanhas e LP atuais",
     "Onde sua verba está vazando (em R$) e como tampar",
     "Projeção realista de leads e CPA para o seu nicho",
-    "Plano de ação de 30 dias — leva mesmo se não fechar",
+    "Plano de ação de 30 dias, leva mesmo se não fechar",
   ];
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -823,7 +823,7 @@ function FinalCta() {
           <br />
           <span className="bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] bg-clip-text text-transparent">geração de clientes?</span>
         </motion.h2>
-        <p className="mt-5 text-lg text-white/70">Diagnóstico 100% gratuito, sem compromisso. Resposta em até 24h — e o plano é seu mesmo se a gente não fechar.</p>
+        <p className="mt-5 text-lg text-white/70">Diagnóstico 100% gratuito, sem compromisso. Resposta em até 24h, e o plano é seu mesmo se a gente não fechar.</p>
         <a href="#diagnostico" className="mt-8 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] px-7 py-4 text-sm font-semibold text-white shadow-lg shadow-[#4F7CFF]/40 transition-all hover:scale-[1.02]">
           Quero meu diagnóstico agora
           <ArrowRight className="h-4 w-4" />
