@@ -399,10 +399,10 @@ function ProblemSection() {
 
 function SolutionSection() {
   const steps = [
-    { step: 1, title: "Diagnóstico Completo", desc: "Análise profunda da sua atual estrutura", Icon: Search },
-    { step: 2, title: "Estratégia Personalizada", desc: "Montamos a campanha e LP otimizada", Icon: Brain },
-    { step: 3, title: "Implementação Rápida", desc: "Lançamos tudo em poucos dias", Icon: Rocket },
-    { step: 4, title: "Otimização + Escala", desc: "Acompanhamento diário e crescimento", Icon: TrendingUp },
+    { step: 1, title: "Diagnóstico em 24h", desc: "Auditamos suas campanhas, LP e funil — e mostramos onde está vazando dinheiro.", Icon: Search },
+    { step: 2, title: "Estratégia sob medida", desc: "Criamos oferta, criativos e landing page validados para o seu nicho.", Icon: Brain },
+    { step: 3, title: "Lançamento em até 7 dias", desc: "Subimos campanhas, integramos CRM e IA e começamos a captar leads.", Icon: Rocket },
+    { step: 4, title: "Otimização e escala", desc: "Acompanhamento diário, relatórios semanais e crescimento composto.", Icon: TrendingUp },
   ];
   return (
     <section id="metodo" className="relative py-24">
