@@ -1,6 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { getMarketingNews } from "@/lib/news.functions";
+
 
 import { supabase } from "@/integrations/supabase/client";
 
@@ -53,6 +56,8 @@ import {
   Sun,
   Moon,
   Calendar,
+  Newspaper,
+  ExternalLink,
 
 
 
@@ -112,7 +117,7 @@ function CrmPage() {
   const [ready, setReady] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [view, setView] = useState<"kanban" | "stats">("kanban");
+  const [view, setView] = useState<"kanban" | "stats" | "news">("kanban");
   const [ticketMedio, setTicketMedio] = useState<number>(() => {
     if (typeof window === "undefined") return 0;
     return Number(localStorage.getItem("crm-ticket-medio") || 0);
@@ -296,6 +301,7 @@ function CrmPage() {
             <div className="flex items-center gap-1">
               <TabBtn active={view === "kanban"} onClick={() => setView("kanban")} icon={<LayoutGrid className="size-4" />} label="KANBAN" />
               <TabBtn active={view === "stats"} onClick={() => setView("stats")} icon={<PieChart className="size-4" />} label="ESTATÍSTICAS" />
+              <TabBtn active={view === "news"} onClick={() => setView("news")} icon={<Newspaper className="size-4" />} label="NOTÍCIAS" />
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" className="rounded-full"><Filter className="size-4 mr-1" /> FILTRAR</Button>
@@ -331,6 +337,9 @@ function CrmPage() {
               onTicketChange={saveTicket}
             />
           )}
+
+          {view === "news" && <NewsPanel />}
+
 
         </main>
       </div>
@@ -907,3 +916,46 @@ function Field({ icon, label, value }: { icon: React.ReactNode; label: string; v
   );
 }
 
+
+function NewsPanel() {
+  const fetchNews = useServerFn(getMarketingNews);
+  const { data, isLoading, isError, refetch, isFetching } = useQuery({
+    queryKey: ["marketing-news"],
+    queryFn: () => fetchNews(),
+    staleTime: 1000 * 60 * 30,
+  });
+  const items = data?.items ?? [];
+  return (
+    <div className="rounded-2xl bg-card border border-border p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-bold font-display">Notícias do dia</h2>
+          <p className="text-sm text-muted-foreground">Marketing e tráfego, atualizado das principais fontes do Brasil.</p>
+        </div>
+        <Button variant="outline" size="sm" className="rounded-full" onClick={() => refetch()} disabled={isFetching}>
+          <RefreshCw className={`size-4 mr-1 ${isFetching ? "animate-spin" : ""}`} /> Atualizar
+        </Button>
+      </div>
+      {isLoading && <div className="text-sm text-muted-foreground">Carregando notícias…</div>}
+      {isError && <div className="text-sm text-destructive">Não foi possível carregar as notícias agora.</div>}
+      {!isLoading && items.length === 0 && !isError && (
+        <div className="text-sm text-muted-foreground">Nenhuma notícia encontrada no momento.</div>
+      )}
+      <ul className="divide-y divide-border">
+        {items.map((n) => (
+          <li key={n.link} className="py-3">
+            <a href={n.link} target="_blank" rel="noopener noreferrer" className="group flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <div className="font-medium leading-snug group-hover:underline">{n.title}</div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {n.source}{n.pubDate ? ` · ${new Date(n.pubDate).toLocaleDateString("pt-BR")}` : ""}
+                </div>
+              </div>
+              <ExternalLink className="size-4 text-muted-foreground shrink-0 mt-1" />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
