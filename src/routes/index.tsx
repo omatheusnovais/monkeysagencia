@@ -175,10 +175,10 @@ function HeroDashboard() {
 
 function Hero() {
   const benefits = [
-    "Leads qualificados todos os dias",
-    "CPA até 60% menor",
-    "Atendimento 24/7 com IA",
-    "Previsibilidade real de escala",
+    "De 5 a 30 leads qualificados por dia",
+    "CPA até 60% menor em 60 dias",
+    "Atendimento 24/7 com IA que vende por você",
+    "Previsibilidade real — sem depender de indicação",
   ];
   const stagger = {
     hidden: {},
