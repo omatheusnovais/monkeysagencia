@@ -216,6 +216,27 @@
   &:active { transform: scale(0.97); }
 }
 
+/* Light theme override (scoped) */
+.theme-light {
+  --background: #f4f6f8;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #2f6bff;
+  --primary-foreground: #ffffff;
+  --secondary: #eef1f5;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f3f6;
+  --muted-foreground: #64748b;
+  --accent: #eef1f5;
+  --accent-foreground: #0f172a;
+  --border: rgba(15,23,42,0.08);
+  --input: rgba(15,23,42,0.12);
+  --ring: #2f6bff;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
