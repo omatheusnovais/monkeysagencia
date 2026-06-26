@@ -341,10 +341,10 @@ function CrmPage() {
             <StatsPanel
               vendas={totals.vendas}
               total={totals.total}
-              ticketMedio={ticketMedio}
-              onTicketChange={saveTicket}
+              receita={totals.receita}
             />
           )}
+
 
           {view === "news" && <NewsPanel />}
 
