@@ -118,14 +118,8 @@ function CrmPage() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [view, setView] = useState<"kanban" | "stats" | "news">("kanban");
-  const [ticketMedio, setTicketMedio] = useState<number>(() => {
-    if (typeof window === "undefined") return 0;
-    return Number(localStorage.getItem("crm-ticket-medio") || 0);
-  });
-  function saveTicket(v: number) {
-    setTicketMedio(v);
-    localStorage.setItem("crm-ticket-medio", String(v));
-  }
+
+
   const { theme, toggle } = useTheme();
 
   useEffect(() => {
@@ -195,13 +189,21 @@ function CrmPage() {
 
   const totals = useMemo(() => {
     const all = leadsQ.data ?? [];
+    const fechados = all.filter((l) => l.status === "contrato_fechado");
+    const receita = fechados.reduce((sum, l) => {
+      const raw = l.message?.split("\n").find((line) => line.startsWith("Valor do contrato:"))?.split(":").slice(1).join(":").trim() ?? "";
+      const num = Number(raw.replace(/[^\d,.-]/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", "."));
+      return sum + (isFinite(num) ? num : 0);
+    }, 0);
     return {
       leads: all.filter((l) => l.status === "novos" || l.status === "em_contato").length,
-      vendas: all.filter((l) => l.status === "contrato_fechado").length,
+      vendas: fechados.length,
       perdidos: all.filter((l) => l.status === "desqualificado").length,
       total: all.length,
+      receita,
     };
   }, [leadsQ.data]);
+
 
   const moveMut = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: Status }) => {
@@ -333,10 +335,10 @@ function CrmPage() {
             <StatsPanel
               vendas={totals.vendas}
               total={totals.total}
-              ticketMedio={ticketMedio}
-              onTicketChange={saveTicket}
+              receita={totals.receita}
             />
           )}
+
 
           {view === "news" && <NewsPanel />}
 
@@ -359,15 +361,15 @@ function KpiCard({ color, label, value, active }: { color: string; label: string
   );
 }
 
-function StatsPanel({ vendas, total, ticketMedio, onTicketChange }: { vendas: number; total: number; ticketMedio: number; onTicketChange: (v: number) => void }) {
+function StatsPanel({ vendas, total, receita }: { vendas: number; total: number; receita: number }) {
   const conv = total > 0 ? (vendas / total) * 100 : 0;
-  const receita = vendas * ticketMedio;
+  const ticketMedio = vendas > 0 ? receita / vendas : 0;
   const fmt = (n: number) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   return (
     <div className="rounded-2xl bg-card border border-border p-6 space-y-6">
       <div>
         <h2 className="text-lg font-bold font-display">Estatísticas</h2>
-        <p className="text-sm text-muted-foreground">Métricas calculadas a partir dos leads no funil.</p>
+        <p className="text-sm text-muted-foreground">Métricas calculadas a partir dos contratos fechados.</p>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="rounded-xl border border-border p-5">
@@ -378,27 +380,18 @@ function StatsPanel({ vendas, total, ticketMedio, onTicketChange }: { vendas: nu
         <div className="rounded-xl border border-border p-5">
           <div className="text-[11px] tracking-wider font-semibold text-muted-foreground">TICKET MÉDIO</div>
           <div className="text-3xl font-bold mt-2">{fmt(ticketMedio)}</div>
-          <div className="mt-3">
-            <Label className="text-xs">Definir ticket médio (R$)</Label>
-            <Input
-              type="number"
-              min={0}
-              value={ticketMedio || ""}
-              onChange={(e) => onTicketChange(Number(e.target.value) || 0)}
-              className="mt-1"
-              placeholder="0,00"
-            />
-          </div>
+          <div className="text-xs text-muted-foreground mt-1">Média dos {vendas} contrato(s) fechado(s)</div>
         </div>
         <div className="rounded-xl border border-border p-5">
           <div className="text-[11px] tracking-wider font-semibold text-muted-foreground">RECEITA TOTAL</div>
           <div className="text-3xl font-bold mt-2">{fmt(receita)}</div>
-          <div className="text-xs text-muted-foreground mt-1">{vendas} venda(s) × ticket médio</div>
+          <div className="text-xs text-muted-foreground mt-1">Soma dos contratos fechados</div>
         </div>
       </div>
     </div>
   );
 }
+
 
 function TabBtn({ active, onClick, icon, label }: { active: boolean; onClick: () => void; icon: React.ReactNode; label: string }) {
   return (
