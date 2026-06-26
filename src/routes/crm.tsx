@@ -335,6 +335,9 @@ function CrmPage() {
             />
           )}
 
+          {view === "news" && <NewsPanel />}
+
+
         </main>
       </div>
     </div>
