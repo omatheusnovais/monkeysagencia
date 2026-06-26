@@ -332,37 +332,8 @@ function CrmPage() {
             </DndContext>
           )}
 
-          {view === "lista" && (
-            <div className="rounded-2xl bg-card border border-border overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="bg-muted/50">
-                  <tr className="text-left text-xs uppercase text-muted-foreground">
-                    <th className="px-4 py-3">Nome</th>
-                    <th className="px-4 py-3">Empresa / Email</th>
-                    <th className="px-4 py-3">Telefone</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Criado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((l) => (
-                    <tr key={l.id} className="border-t border-border">
-                      <td className="px-4 py-3 font-semibold">{l.name}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{l.email ?? "—"}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{l.phone ?? "—"}</td>
-                      <td className="px-4 py-3">{COLUMNS.find((c) => c.key === l.status)?.title}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{new Date(l.created_at).toLocaleDateString("pt-BR")}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
           {view === "stats" && (
-            <div className="rounded-2xl bg-card border border-border p-8 text-center text-muted-foreground">
-              Estatísticas em breve. Total de leads: <b className="text-foreground">{totals.total}</b>
-            </div>
+            <NewsPanel />
           )}
         </main>
       </div>
