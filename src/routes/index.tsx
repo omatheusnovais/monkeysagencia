@@ -719,7 +719,7 @@ function OfferSection() {
                 <SelectField label="Faturamento mensal" options={["Até R$10k", "R$10k–30k", "R$30k–60k", "R$60k–120k", "Acima de R$120k"]} />
                 <SelectField label="Investimento diário em tráfego" options={["Não invisto ainda", "Até R$50/dia", "R$51–100/dia", "Acima de R$100/dia"]} />
                 <button type="submit" className="group mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#4F7CFF]/30 transition-all hover:scale-[1.01]">
-                  Quero Minha Análise Gratuita
+                  Quero meu diagnóstico gratuito
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </button>
               </form>
