@@ -323,6 +323,15 @@ function CrmPage() {
             </DndContext>
           )}
 
+          {view === "stats" && (
+            <StatsPanel
+              vendas={totals.vendas}
+              total={totals.total}
+              ticketMedio={ticketMedio}
+              onTicketChange={saveTicket}
+            />
+          )}
+
         </main>
       </div>
     </div>
