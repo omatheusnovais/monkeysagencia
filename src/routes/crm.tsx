@@ -450,6 +450,7 @@ function LeadCard({ lead, dragging }: { lead: Lead; dragging?: boolean }) {
   const qc = useQueryClient();
   const [detailOpen, setDetailOpen] = useState(false);
   const company = lead.message?.split("\n").find((line) => line.toLowerCase().includes("empresa"))?.split(":")[1]?.trim();
+  const valorContrato = lead.message?.split("\n").find((line) => line.startsWith("Valor do contrato:"))?.split(":").slice(1).join(":").trim() ?? "";
   const dateStr = new Date(lead.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
 
   async function remove() {
@@ -483,7 +484,7 @@ function LeadCard({ lead, dragging }: { lead: Lead; dragging?: boolean }) {
           {lead.phone && <div className="flex items-center gap-1.5"><Phone className="size-3.5 text-emerald-500" />{lead.phone}</div>}
         </div>
         <div className="mt-3 pt-3 border-t border-border flex items-center justify-between text-xs">
-          <span className="font-bold">R$ 0,00</span>
+          <span className="font-bold">{valorContrato || "R$ 0,00"}</span>
           <span className="text-muted-foreground inline-flex items-center gap-1"><Calendar className="size-3" /> {dateStr}</span>
         </div>
       </div>
