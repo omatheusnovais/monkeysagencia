@@ -159,10 +159,21 @@ function CrmPage() {
     const list = leadsQ.data ?? [];
     if (!search.trim()) return list;
     const q = search.toLowerCase();
-    return list.filter((l) =>
-      [l.name, l.email, l.phone, l.message].some((v) => v?.toLowerCase().includes(q))
-    );
+    return list.filter((l) => l.name?.toLowerCase().includes(q));
   }, [leadsQ.data, search]);
+
+  const [lastSeen, setLastSeen] = useState<number>(() => {
+    if (typeof window === "undefined") return 0;
+    return Number(localStorage.getItem("crm-leads-last-seen") || 0);
+  });
+  const unread = useMemo(() => {
+    return (leadsQ.data ?? []).filter((l) => new Date(l.created_at).getTime() > lastSeen).length;
+  }, [leadsQ.data, lastSeen]);
+  function markSeen() {
+    const now = Date.now();
+    localStorage.setItem("crm-leads-last-seen", String(now));
+    setLastSeen(now);
+  }
 
   const grouped = useMemo(() => {
     const map: Record<Status, Lead[]> = { novos: [], em_contato: [], contrato_fechado: [], desqualificado: [] };
@@ -223,7 +234,7 @@ function CrmPage() {
         {/* Top bar */}
         <header className="border-b border-border bg-card px-6 py-4 flex items-center gap-4">
           <div className="flex items-center gap-3 min-w-[260px]">
-            <h1 className="text-xl font-bold tracking-tight" style={{ fontFamily: "Georgia, serif" }}>Funil de Vendas</h1>
+            <h1 className="text-xl font-bold tracking-tight font-display">Funil de Vendas</h1>
             <span className="text-xs px-2.5 py-1 rounded-full bg-muted text-muted-foreground">Principal</span>
           </div>
           <div className="flex-1 max-w-2xl">
@@ -232,21 +243,24 @@ function CrmPage() {
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Pesquisar..."
+                placeholder="Pesquisar por nome..."
                 className="pl-9 rounded-full bg-background"
               />
             </div>
           </div>
           <div className="flex items-center gap-2">
             <LabelsManager labels={labelsQ.data ?? []} />
-            <Button className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground">
-              <Plus className="size-4 mr-1" /> NOVO LEAD
-            </Button>
+            <NewLeadDialog />
             <button onClick={toggle} className="size-9 rounded-full hover:bg-muted flex items-center justify-center" title="Alternar tema">
               {theme === "light" ? <Moon className="size-4" /> : <Sun className="size-4" />}
             </button>
-            <button className="size-9 rounded-full hover:bg-muted flex items-center justify-center" title="Notificações">
+            <button onClick={markSeen} className="relative size-9 rounded-full hover:bg-muted flex items-center justify-center" title={`${unread} novos leads`}>
               <Bell className="size-4" />
+              {unread > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                  {unread > 99 ? "99+" : unread}
+                </span>
+              )}
             </button>
             <button onClick={logout} className="size-9 rounded-full hover:bg-muted flex items-center justify-center" title="Sair">
               <LogOut className="size-4" />
@@ -418,7 +432,7 @@ function LeadCard({ lead, labels, dragging }: { lead: Lead; labels: LabelRow[]; 
   return (
     <div className={`rounded-xl border border-border bg-background p-4 shadow-sm hover:shadow-md transition cursor-grab active:cursor-grabbing ${dragging ? "shadow-2xl ring-2 ring-primary/50" : ""}`}>
       <div className="flex items-start justify-between gap-2">
-        <h3 className="font-bold text-sm uppercase tracking-wide truncate" style={{ fontFamily: "Georgia, serif" }}>{lead.name}</h3>
+        <h3 className="font-bold text-sm uppercase tracking-wide truncate font-display">{lead.name}</h3>
         <DropdownMenu>
           <DropdownMenuTrigger asChild onPointerDown={(e) => e.stopPropagation()}>
             <button className="p-1 hover:bg-muted rounded" aria-label="Ações"><MoreVertical className="size-4" /></button>
@@ -510,6 +524,69 @@ function LabelsManager({ labels }: { labels: LabelRow[] }) {
             <Button onClick={save}><Plus className="size-4 mr-1" /> {editing ? "Salvar" : "Criar"}</Button>
           </DialogFooter>
         </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function NewLeadDialog() {
+  const qc = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
+
+  function reset() { setForm({ name: "", email: "", phone: "", message: "" }); }
+
+  async function save() {
+    if (!form.name.trim()) return;
+    setSaving(true);
+    const { error } = await supabase.from("leads").insert({
+      name: form.name.trim(),
+      email: form.email.trim() || null,
+      phone: form.phone.trim() || null,
+      message: form.message.trim() || null,
+      status: "novos",
+    });
+    setSaving(false);
+    if (error) { alert("Erro ao criar lead: " + error.message); return; }
+    qc.invalidateQueries({ queryKey: ["leads"] });
+    reset();
+    setOpen(false);
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) reset(); }}>
+      <DialogTrigger asChild>
+        <Button className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground">
+          <Plus className="size-4 mr-1" /> NOVO LEAD
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-md">
+        <DialogHeader><DialogTitle>Cadastrar lead manualmente</DialogTitle></DialogHeader>
+        <div className="space-y-3">
+          <div className="space-y-1.5">
+            <Label htmlFor="nl-name" className="text-xs">Nome *</Label>
+            <Input id="nl-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} autoFocus />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="nl-phone" className="text-xs">WhatsApp / Telefone</Label>
+            <Input id="nl-phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="nl-email" className="text-xs">Email</Label>
+            <Input id="nl-email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="nl-msg" className="text-xs">Observações</Label>
+            <Input id="nl-msg" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder="Empresa, faturamento, etc." />
+          </div>
+        </div>
+        <DialogFooter className="gap-2">
+          <Button variant="ghost" onClick={() => setOpen(false)}>Cancelar</Button>
+          <Button onClick={save} disabled={saving || !form.name.trim()}>
+            <Plus className="size-4 mr-1" /> {saving ? "Salvando..." : "Criar lead"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
