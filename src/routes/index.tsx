@@ -649,8 +649,9 @@ function AboutSection() {
                 <img
                   src={matheusPhoto.url}
                   alt="Matheus Novais palestrando"
-                  className="h-full w-full object-cover object-top"
+                  className="h-full w-full scale-[1.7] object-cover object-[58%_28%]"
                 />
+
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#080808]/60 via-transparent to-transparent" />
               </div>
             </div>
