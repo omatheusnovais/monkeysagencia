@@ -211,10 +211,11 @@ function Hero() {
               variants={fadeUp}
               className="mt-6 text-[2.5rem] font-black leading-[1.02] tracking-[-0.03em] sm:text-5xl md:text-[4.25rem]"
             >
-              Lote sua agenda de
+              Mais previsibilidade na sua
               <br />
               <span className="relative inline-block bg-gradient-to-r from-white via-[#c9d4ff] to-[#a48bff] bg-clip-text text-transparent">
-                clientes qualificados
+                geração de clientes
+
                 <svg
                   aria-hidden
                   viewBox="0 0 300 12"
@@ -802,9 +803,9 @@ function FinalCta() {
       </div>
       <div className="relative mx-auto max-w-4xl px-6 text-center">
         <motion.h2 initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp} className="text-3xl font-bold leading-tight tracking-tight md:text-5xl">
-          Pronto para lotar sua agenda de
+          Pronto para ter mais previsibilidade na sua
           <br />
-          <span className="bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] bg-clip-text text-transparent">clientes qualificados?</span>
+          <span className="bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] bg-clip-text text-transparent">geração de clientes?</span>
         </motion.h2>
         <p className="mt-5 text-lg text-white/70">Diagnóstico 100% gratuito, sem compromisso. Resposta em até 24h — e o plano é seu mesmo se a gente não fechar.</p>
         <a href="#diagnostico" className="mt-8 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] px-7 py-4 text-sm font-semibold text-white shadow-lg shadow-[#4F7CFF]/40 transition-all hover:scale-[1.02]">
