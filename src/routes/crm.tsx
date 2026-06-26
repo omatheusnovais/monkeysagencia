@@ -415,6 +415,7 @@ function DraggableCard({ lead, labels }: { lead: Lead; labels: LabelRow[] }) {
 
 function LeadCard({ lead, labels, dragging }: { lead: Lead; labels: LabelRow[]; dragging?: boolean }) {
   const qc = useQueryClient();
+  const [detailOpen, setDetailOpen] = useState(false);
   const label = labels.find((l) => l.id === lead.label_id);
   const company = lead.message?.split("\n").find((line) => line.toLowerCase().includes("empresa"))?.split(":")[1]?.trim();
   const dateStr = new Date(lead.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
@@ -430,43 +431,50 @@ function LeadCard({ lead, labels, dragging }: { lead: Lead; labels: LabelRow[]; 
   }
 
   return (
-    <div className={`rounded-xl border border-border bg-background p-4 shadow-sm hover:shadow-md transition cursor-grab active:cursor-grabbing ${dragging ? "shadow-2xl ring-2 ring-primary/50" : ""}`}>
-      <div className="flex items-start justify-between gap-2">
-        <h3 className="font-bold text-sm uppercase tracking-wide truncate font-display">{lead.name}</h3>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild onPointerDown={(e) => e.stopPropagation()}>
-            <button className="p-1 hover:bg-muted rounded" aria-label="Ações"><MoreVertical className="size-4" /></button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" onPointerDown={(e) => e.stopPropagation()}>
-            <DropdownMenuItem onSelect={() => setLabel(null)}>Sem etiqueta</DropdownMenuItem>
-            {labels.map((l) => (
-              <DropdownMenuItem key={l.id} onSelect={() => setLabel(l.id)}>
-                <span className="size-2 rounded-full mr-2" style={{ background: l.color }} />{l.name}
+    <>
+      <div
+        onClick={() => { if (!dragging) setDetailOpen(true); }}
+        className={`rounded-xl border border-border bg-background p-4 shadow-sm hover:shadow-md transition cursor-grab active:cursor-grabbing ${dragging ? "shadow-2xl ring-2 ring-primary/50" : ""}`}
+      >
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="font-bold text-sm uppercase tracking-wide truncate font-display">{lead.name}</h3>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild onPointerDown={(e) => e.stopPropagation()}>
+              <button onClick={(e) => e.stopPropagation()} className="p-1 hover:bg-muted rounded" aria-label="Ações"><MoreVertical className="size-4" /></button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" onPointerDown={(e) => e.stopPropagation()}>
+              <DropdownMenuItem onSelect={() => setLabel(null)}>Sem etiqueta</DropdownMenuItem>
+              {labels.map((l) => (
+                <DropdownMenuItem key={l.id} onSelect={() => setLabel(l.id)}>
+                  <span className="size-2 rounded-full mr-2" style={{ background: l.color }} />{l.name}
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuItem onSelect={remove} className="text-destructive">
+                <Trash2 className="size-4 mr-2" /> Excluir
               </DropdownMenuItem>
-            ))}
-            <DropdownMenuItem onSelect={remove} className="text-destructive">
-              <Trash2 className="size-4 mr-2" /> Excluir
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        {company && <p className="text-xs text-muted-foreground uppercase tracking-wide mt-0.5">{company}</p>}
+        {label && (
+          <Badge style={{ backgroundColor: label.color + "22", color: label.color, borderColor: label.color + "55" }} variant="outline" className="mt-2">
+            <Tag className="size-3 mr-1" />{label.name}
+          </Badge>
+        )}
+        <div className="space-y-1.5 text-xs text-muted-foreground mt-3">
+          {lead.email && <div className="flex items-center gap-1.5"><Mail className="size-3.5 text-primary" /><span className="truncate">{lead.email}</span></div>}
+          {lead.phone && <div className="flex items-center gap-1.5"><Phone className="size-3.5 text-emerald-500" />{lead.phone}</div>}
+        </div>
+        <div className="mt-3 pt-3 border-t border-border flex items-center justify-between text-xs">
+          <span className="font-bold">R$ 0,00</span>
+          <span className="text-muted-foreground inline-flex items-center gap-1"><Calendar className="size-3" /> {dateStr}</span>
+        </div>
       </div>
-      {company && <p className="text-xs text-muted-foreground uppercase tracking-wide mt-0.5">{company}</p>}
-      {label && (
-        <Badge style={{ backgroundColor: label.color + "22", color: label.color, borderColor: label.color + "55" }} variant="outline" className="mt-2">
-          <Tag className="size-3 mr-1" />{label.name}
-        </Badge>
-      )}
-      <div className="space-y-1.5 text-xs text-muted-foreground mt-3">
-        {lead.email && <div className="flex items-center gap-1.5"><Mail className="size-3.5 text-primary" /><span className="truncate">{lead.email}</span></div>}
-        {lead.phone && <div className="flex items-center gap-1.5"><Phone className="size-3.5 text-emerald-500" />{lead.phone}</div>}
-      </div>
-      <div className="mt-3 pt-3 border-t border-border flex items-center justify-between text-xs">
-        <span className="font-bold">R$ 0,00</span>
-        <span className="text-muted-foreground inline-flex items-center gap-1"><Calendar className="size-3" /> {dateStr}</span>
-      </div>
-    </div>
+      {!dragging && <LeadDetailDialog lead={lead} labels={labels} open={detailOpen} onOpenChange={setDetailOpen} />}
+    </>
   );
 }
+
 
 function LabelsManager({ labels }: { labels: LabelRow[] }) {
   const qc = useQueryClient();
@@ -533,18 +541,23 @@ function NewLeadDialog() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
+  const empty = { name: "", email: "", phone: "", company: "", faturamento: "", note: "" };
+  const [form, setForm] = useState(empty);
 
-  function reset() { setForm({ name: "", email: "", phone: "", message: "" }); }
+  function reset() { setForm(empty); }
 
   async function save() {
     if (!form.name.trim()) return;
     setSaving(true);
+    const lines: string[] = [];
+    if (form.company.trim()) lines.push(`Empresa: ${form.company.trim()}`);
+    if (form.faturamento.trim()) lines.push(`Faturamento mensal: ${form.faturamento.trim()}`);
+    if (form.note.trim()) lines.push(`Anotação: ${form.note.trim()}`);
     const { error } = await supabase.from("leads").insert({
       name: form.name.trim(),
       email: form.email.trim() || null,
       phone: form.phone.trim() || null,
-      message: form.message.trim() || null,
+      message: lines.length ? lines.join("\n") : null,
       status: "novos",
     });
     setSaving(false);
@@ -561,7 +574,7 @@ function NewLeadDialog() {
           <Plus className="size-4 mr-1" /> NOVO LEAD
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader><DialogTitle>Cadastrar lead manualmente</DialogTitle></DialogHeader>
         <div className="space-y-3">
           <div className="space-y-1.5">
@@ -577,8 +590,23 @@ function NewLeadDialog() {
             <Input id="nl-email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="nl-msg" className="text-xs">Observações</Label>
-            <Input id="nl-msg" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder="Empresa, faturamento, etc." />
+            <Label htmlFor="nl-company" className="text-xs">Empresa</Label>
+            <Input id="nl-company" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="nl-fat" className="text-xs">Faturamento mensal</Label>
+            <Input id="nl-fat" value={form.faturamento} onChange={(e) => setForm({ ...form, faturamento: e.target.value })} placeholder="Ex.: R$10k–30k" />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="nl-note" className="text-xs">Anotação</Label>
+            <textarea
+              id="nl-note"
+              value={form.note}
+              onChange={(e) => setForm({ ...form, note: e.target.value })}
+              rows={3}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              placeholder="Observações internas sobre o lead"
+            />
           </div>
         </div>
         <DialogFooter className="gap-2">
@@ -591,3 +619,103 @@ function NewLeadDialog() {
     </Dialog>
   );
 }
+
+function LeadDetailDialog({ lead, labels, open, onOpenChange }: { lead: Lead; labels: LabelRow[]; open: boolean; onOpenChange: (o: boolean) => void }) {
+  const label = labels.find((l) => l.id === lead.label_id);
+  const parsed: Record<string, string> = {};
+  (lead.message ?? "").split("\n").forEach((line) => {
+    const idx = line.indexOf(":");
+    if (idx > 0) {
+      const k = line.slice(0, idx).trim();
+      const v = line.slice(idx + 1).trim();
+      if (k && v) parsed[k] = v;
+    }
+  });
+  const utms = [
+    ["utm_source", lead.utm_source],
+    ["utm_medium", lead.utm_medium],
+    ["utm_campaign", lead.utm_campaign],
+    ["utm_term", lead.utm_term],
+    ["utm_content", lead.utm_content],
+  ].filter(([, v]) => v) as [string, string][];
+  const statusTitle = COLUMNS.find((c) => c.key === lead.status)?.title ?? lead.status;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="font-display text-xl">{lead.name}</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 text-sm">
+          <div className="flex flex-wrap gap-2">
+            <span className="text-xs px-2.5 py-1 rounded-full bg-muted">{statusTitle}</span>
+            {label && (
+              <span className="text-xs px-2.5 py-1 rounded-full inline-flex items-center gap-1"
+                style={{ backgroundColor: label.color + "22", color: label.color }}>
+                <Tag className="size-3" />{label.name}
+              </span>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Field icon={<Mail className="size-3.5" />} label="Email" value={lead.email ?? "—"} />
+            <Field icon={<Phone className="size-3.5" />} label="WhatsApp / Telefone" value={lead.phone ?? "—"} />
+          </div>
+
+          {Object.keys(parsed).length > 0 && (
+            <div className="rounded-lg border border-border p-3 space-y-2">
+              <h4 className="text-xs font-semibold tracking-wider text-muted-foreground">RESPOSTAS DO DIAGNÓSTICO</h4>
+              {Object.entries(parsed).map(([k, v]) => (
+                <div key={k} className="flex justify-between gap-3 text-sm">
+                  <span className="text-muted-foreground">{k}</span>
+                  <span className="font-medium text-right">{v}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {utms.length > 0 && (
+            <div className="rounded-lg border border-border p-3 space-y-1.5">
+              <h4 className="text-xs font-semibold tracking-wider text-muted-foreground">ORIGEM (UTMs)</h4>
+              {utms.map(([k, v]) => (
+                <div key={k} className="flex justify-between gap-3 text-xs">
+                  <span className="text-muted-foreground">{k}</span>
+                  <span className="font-mono">{v}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="text-xs text-muted-foreground">
+            Criado em {new Date(lead.created_at).toLocaleString("pt-BR")}
+          </div>
+
+          <div className="flex flex-wrap gap-2 pt-2">
+            {lead.phone && (
+              <a href={`https://wa.me/${lead.phone.replace(/\D/g, "")}`} target="_blank" rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-emerald-500 text-white hover:bg-emerald-600">
+                <Phone className="size-3.5" /> Abrir WhatsApp
+              </a>
+            )}
+            {lead.email && (
+              <a href={`mailto:${lead.email}`}
+                className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
+                <Mail className="size-3.5" /> Enviar email
+              </a>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function Field({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-border p-3">
+      <div className="text-[11px] font-semibold tracking-wider text-muted-foreground inline-flex items-center gap-1.5">{icon}{label}</div>
+      <div className="mt-1 text-sm break-words">{value}</div>
+    </div>
+  );
+}
+
