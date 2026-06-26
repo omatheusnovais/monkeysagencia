@@ -510,32 +510,85 @@ function NewLeadDialog() {
   );
 }
 
-function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: boolean; onOpenChange: (o: boolean) => void }) {
-  const qc = useQueryClient();
-  const parsed: Record<string, string> = {};
-  (lead.message ?? "").split("\n").forEach((line) => {
+type Note = { id: string; text: string; at: string; editedAt?: string };
+
+function parseMessage(message: string | null): { fields: Record<string, string>; notes: Note[] } {
+  const fields: Record<string, string> = {};
+  let notes: Note[] = [];
+  (message ?? "").split("\n").forEach((line) => {
     const idx = line.indexOf(":");
-    if (idx > 0) {
-      const k = line.slice(0, idx).trim();
-      const v = line.slice(idx + 1).trim();
-      if (k && v) parsed[k] = v;
+    if (idx <= 0) return;
+    const k = line.slice(0, idx).trim();
+    const v = line.slice(idx + 1).trim();
+    if (!k || !v) return;
+    if (k === "Notas") {
+      try {
+        const arr = JSON.parse(v);
+        if (Array.isArray(arr)) notes = arr;
+      } catch { /* ignore */ }
+    } else {
+      fields[k] = v;
     }
   });
-  const noteKey = "Anotação" in parsed ? "Anotação" : ("Anotacao" in parsed ? "Anotacao" : "Anotação");
-  const diagnostic = Object.fromEntries(Object.entries(parsed).filter(([k]) => k !== "Anotação" && k !== "Anotacao"));
-  const [noteDraft, setNoteDraft] = useState(parsed[noteKey] ?? "");
-  const [savingNote, setSavingNote] = useState(false);
-  useEffect(() => { setNoteDraft(parsed[noteKey] ?? ""); /* eslint-disable-next-line */ }, [lead.id, lead.message]);
-  async function saveNote() {
-    setSavingNote(true);
-    const others = Object.entries(parsed).filter(([k]) => k !== "Anotação" && k !== "Anotacao");
-    const lines = others.map(([k, v]) => `${k}: ${v}`);
-    if (noteDraft.trim()) lines.push(`Anotação: ${noteDraft.trim()}`);
-    const { error } = await supabase.from("leads").update({ message: lines.length ? lines.join("\n") : null }).eq("id", lead.id);
-    setSavingNote(false);
-    if (error) { alert("Erro ao salvar anotação: " + error.message); return; }
-    qc.invalidateQueries({ queryKey: ["leads"] });
+  // Backward-compat: migrate single "Anotação" into the notes list
+  const legacy = fields["Anotação"] ?? fields["Anotacao"];
+  if (legacy && notes.length === 0) {
+    notes = [{ id: crypto.randomUUID(), text: legacy, at: new Date().toISOString() }];
   }
+  delete fields["Anotação"];
+  delete fields["Anotacao"];
+  return { fields, notes };
+}
+
+function serializeMessage(fields: Record<string, string>, notes: Note[]): string | null {
+  const lines = Object.entries(fields).filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`);
+  if (notes.length) lines.push(`Notas: ${JSON.stringify(notes)}`);
+  return lines.length ? lines.join("\n") : null;
+}
+
+function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: boolean; onOpenChange: (o: boolean) => void }) {
+  const qc = useQueryClient();
+  const { fields: diagnostic, notes } = useMemo(() => parseMessage(lead.message), [lead.message]);
+
+  const [noteDraft, setNoteDraft] = useState("");
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [savingNote, setSavingNote] = useState(false);
+
+  async function persistNotes(nextNotes: Note[]) {
+    setSavingNote(true);
+    const { error } = await supabase.from("leads").update({
+      message: serializeMessage(diagnostic, nextNotes),
+    }).eq("id", lead.id);
+    setSavingNote(false);
+    if (error) { alert("Erro ao salvar anotação: " + error.message); return false; }
+    qc.invalidateQueries({ queryKey: ["leads"] });
+    return true;
+  }
+
+  async function addOrUpdateNote() {
+    const text = noteDraft.trim();
+    if (!text) return;
+    let next: Note[];
+    if (editingNoteId) {
+      next = notes.map((n) => n.id === editingNoteId ? { ...n, text, editedAt: new Date().toISOString() } : n);
+    } else {
+      next = [...notes, { id: crypto.randomUUID(), text, at: new Date().toISOString() }];
+    }
+    const ok = await persistNotes(next);
+    if (ok) { setNoteDraft(""); setEditingNoteId(null); }
+  }
+
+  async function deleteNote(id: string) {
+    if (!confirm("Excluir esta anotação?")) return;
+    await persistNotes(notes.filter((n) => n.id !== id));
+    if (editingNoteId === id) { setEditingNoteId(null); setNoteDraft(""); }
+  }
+
+  function startEditNote(n: Note) {
+    setEditingNoteId(n.id);
+    setNoteDraft(n.text);
+  }
+
 
   const utms = [
     ["utm_source", lead.utm_source],
