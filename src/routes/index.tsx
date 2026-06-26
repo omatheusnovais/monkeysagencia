@@ -9,13 +9,14 @@ import {
 import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from "@/components/ui/accordion";
+import monkeysLogo from "@/assets/monkeys-logo.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Performance Agency - Tráfego Pago com IA | Geração de Leads Qualificados" },
-      { name: "description", content: "Criamos sistemas previsíveis de aquisição de clientes com Meta Ads, Google Ads, Landing Pages otimizadas e automações com IA. Diagnóstico gratuito." },
-      { property: "og:title", content: "Performance Agency - Tráfego Pago com IA" },
+      { title: "Monkeys Agência - Tráfego Pago com IA | Geração de Leads Qualificados" },
+      { name: "description", content: "A Monkeys Agência cria sistemas previsíveis de aquisição de clientes com Meta Ads, Google Ads, Landing Pages otimizadas e automações com IA. Diagnóstico gratuito." },
+      { property: "og:title", content: "Monkeys Agência - Tráfego Pago com IA" },
       { property: "og:description", content: "Sistemas previsíveis de aquisição com Meta Ads, Google Ads e IA." },
       { property: "og:type", content: "website" },
     ],
