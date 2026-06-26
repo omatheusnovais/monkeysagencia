@@ -359,9 +359,9 @@ function ResultsSection() {
 
 function ProblemSection() {
   const cards = [
-    { Icon: Target, title: "Tráfego sem conversão", description: "Muitos cliques, poucos leads qualificados." },
-    { Icon: Users, title: "Leads desqualificados", description: "Pessoas que não têm orçamento ou interesse real." },
-    { Icon: TrendingUp, title: "Dependência de indicação", description: "Crescimento instável e imprevisível." },
+    { Icon: Target, title: "Anúncio que não vende", description: "Você paga pelo clique, mas o lead some no meio do caminho — e o boleto do tráfego chega igual." },
+    { Icon: Users, title: "Leads que enrolam", description: "Curioso que pede preço, some no WhatsApp e nunca fecha. Seu time perde tempo, você perde dinheiro." },
+    { Icon: TrendingUp, title: "Mês bom, mês ruim", description: "Sem previsibilidade, planejar contratação, estoque ou caixa vira aposta. Crescer assim cansa." },
   ];
   return (
     <section className="bg-[#080808] py-24">
