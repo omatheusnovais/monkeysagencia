@@ -175,60 +175,119 @@ function HeroDashboard() {
 
 function Hero() {
   const benefits = [
-    "Mais leads qualificados",
-    "Menor custo por aquisição",
-    "Atendimento automatizado",
-    "Escala previsível",
+    "Leads qualificados todos os dias",
+    "CPA até 60% menor",
+    "Atendimento 24/7 com IA",
+    "Previsibilidade real de escala",
   ];
+  const stagger = {
+    hidden: {},
+    show: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+  };
   return (
-    <section className="relative overflow-hidden pt-32 pb-20 md:pt-40 md:pb-32">
+    <section className="relative overflow-hidden pt-28 pb-20 md:pt-36 md:pb-32 motion-reduce:[&_*]:!animate-none">
       <GlowBg />
+      {/* subtle grid */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.08] [background-image:linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] [background-size:48px_48px] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]"
+      />
       <div className="relative mx-auto max-w-7xl px-6">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
-          <motion.div initial="hidden" animate="show" variants={fadeUp}>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-white/80 backdrop-blur">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Google Ads + Meta Ads + IA + Automações
-            </div>
-            <h1 className="mt-6 text-4xl font-black leading-[1.05] tracking-tight md:text-6xl">
-              LOTAMOS SUA AGENDA
-              <br />
-              <span className="bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] bg-clip-text text-transparent">
-                COM CLIENTES QUALIFICADOS
+        <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_1fr]">
+          <motion.div initial="hidden" animate="show" variants={stagger}>
+            {/* Eyebrow */}
+            <motion.div
+              variants={fadeUp}
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-white/80 backdrop-blur-xl"
+            >
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
               </span>
-            </h1>
-            <p className="mt-6 max-w-xl text-lg text-white/70">
-              Criamos sistemas previsíveis de aquisição de clientes usando tráfego pago, inteligência artificial e automações.
-            </p>
-            <ul className="mt-6 grid gap-2 sm:grid-cols-2">
-              {benefits.map(b => (
-                <li key={b} className="flex items-center gap-2 text-sm text-white/80">
-                  <Check className="h-4 w-4 shrink-0 text-[#4F7CFF]" />
+              Novo • Performance com IA · 2026
+            </motion.div>
+
+            <motion.h1
+              variants={fadeUp}
+              className="mt-6 text-[2.5rem] font-black leading-[1.02] tracking-[-0.03em] sm:text-5xl md:text-[4.25rem]"
+            >
+              Lote sua agenda de
+              <br />
+              <span className="relative inline-block bg-gradient-to-r from-white via-[#c9d4ff] to-[#a48bff] bg-clip-text text-transparent">
+                clientes qualificados
+                <svg
+                  aria-hidden
+                  viewBox="0 0 300 12"
+                  className="absolute -bottom-2 left-0 h-2 w-full text-[#4F7CFF]"
+                  preserveAspectRatio="none"
+                >
+                  <path d="M2 8 Q 75 2, 150 6 T 298 5" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                </svg>
+              </span>
+            </motion.h1>
+
+            <motion.p
+              variants={fadeUp}
+              className="mt-7 max-w-xl text-base leading-relaxed text-white/65 md:text-lg"
+            >
+              Sistema previsível de aquisição com <span className="text-white">Meta Ads</span>, <span className="text-white">Google Ads</span>, landing pages otimizadas e automações com IA — tudo conectado para você vender mais sem depender de sorte.
+            </motion.p>
+
+            <motion.ul variants={fadeUp} className="mt-7 grid gap-2.5 sm:grid-cols-2">
+              {benefits.map((b) => (
+                <li key={b} className="flex items-center gap-2.5 text-sm text-white/80">
+                  <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#4F7CFF]/15 ring-1 ring-[#4F7CFF]/30">
+                    <Check className="h-3 w-3 text-[#4F7CFF]" strokeWidth={3} />
+                  </span>
                   {b}
                 </li>
               ))}
-            </ul>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <a href="#diagnostico" className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#4F7CFF]/30 transition-all hover:scale-[1.02] hover:shadow-[#4F7CFF]/50">
+            </motion.ul>
+
+            <motion.div variants={fadeUp} className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <a
+                href="#diagnostico"
+                className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] px-7 py-4 text-sm font-semibold text-white shadow-[0_10px_40px_-10px_rgba(79,124,255,0.6)] transition-all hover:scale-[1.02] hover:shadow-[0_15px_50px_-10px_rgba(139,92,246,0.7)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                aria-label="Quero minha análise gratuita de tráfego"
+              >
+                <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
                 Quero Minha Análise Gratuita
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </a>
-              <a href="https://wa.me/SEUNUMERO" className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur transition-all hover:bg-white/10">
-                <MessageSquare className="h-4 w-4" />
+              <a
+                href="https://wa.me/SEUNUMERO"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-7 py-4 text-sm font-semibold text-white backdrop-blur-xl transition-all hover:border-white/25 hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+              >
+                <MessageSquare className="h-4 w-4 text-emerald-400" />
                 Falar no WhatsApp
               </a>
-            </div>
-            <div className="mt-8 flex flex-wrap items-center gap-6 text-sm text-white/60">
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-[#4F7CFF]" />
-                +150 empresas atendidas
+            </motion.div>
+
+            {/* Social proof */}
+            <motion.div variants={fadeUp} className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
+              <div className="flex items-center -space-x-2">
+                {["#4F7CFF", "#8B5CF6", "#22d3ee", "#f472b6"].map((c) => (
+                  <div
+                    key={c}
+                    className="h-9 w-9 rounded-full border-2 border-black"
+                    style={{ background: `linear-gradient(135deg, ${c}, #1a1a1a)` }}
+                  />
+                ))}
               </div>
-              <div className="flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-[#4F7CFF]" />
-                +R$ 2 milhões investidos
+              <div className="text-sm">
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+                  ))}
+                  <span className="ml-1 font-semibold text-white">4.9/5</span>
+                </div>
+                <div className="text-xs text-white/55">
+                  +150 empresas · R$ 2M+ investidos com lucro
+                </div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
+
           <HeroDashboard />
         </div>
       </div>
