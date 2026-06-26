@@ -844,7 +844,7 @@ function FaqSection() {
     { q: "Em quanto tempo vejo resultados?", a: "A maioria dos clientes começa a ver leads qualificados nos primeiros 7 a 15 dias. O ramp-up completo acontece entre 30 e 60 dias." },
     { q: "Vocês trabalham com qual investimento mínimo?", a: "Recomendamos a partir de R$50/dia em mídia paga para gerar dados suficientes pra otimizar. Atendemos de pequenos negócios a operações grandes." },
     { q: "Preciso ter site ou landing page pronta?", a: "Não. Construímos a landing page otimizada como parte do projeto, focada 100% em conversão." },
-    { q: "Como funciona o contrato?", a: "Trabalhamos com contratos mensais, sem fidelidade longa. Você pode cancelar a qualquer momento." },
+    { q: "Como funciona o contrato?", a: "O período mínimo de contrato é de 3 meses (90 dias), tempo necessário para estruturar campanhas, coletar dados e otimizar resultados. Após esse período, você decide se quer continuar mês a mês." },
     { q: "Quais plataformas vocês usam?", a: "Meta Ads, Google Ads, Performance Max, YouTube, além de CRM e ferramentas de automação." },
     
   ];
