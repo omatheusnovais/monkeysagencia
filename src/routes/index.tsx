@@ -218,11 +218,14 @@ function Hero() {
               variants={fadeUp}
               className="mt-6 text-[2rem] font-black leading-[1.05] tracking-[-0.03em] sm:text-[2.75rem] md:text-[3.5rem]"
             >
-              Mais previsibilidade na sua
-
+              Mais previsibilidade
               <br />
+              na sua{" "}
               <span className="relative inline-block bg-gradient-to-r from-white via-[#c9d4ff] to-[#a48bff] bg-clip-text text-transparent">
-                geração de clientes
+                geração de
+                <br />
+                clientes.
+
 
                 <svg
                   aria-hidden
