@@ -335,61 +335,6 @@ function KpiCard({ color, label, value, active }: { color: string; label: string
   );
 }
 
-function DailyPanel() {
-  const fetchNews = useServerFn(getMarketingNews);
-  const quote = useMemo(() => getDailyQuote(), []);
-  const newsQ = useQuery({
-    queryKey: ["marketing-news"],
-    queryFn: () => fetchNews({}),
-    staleTime: 1000 * 60 * 60 * 6, // 6h
-  });
-  const items = newsQ.data?.items ?? [];
-
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-      <div className="rounded-2xl bg-card border border-border p-5 lg:col-span-1">
-        <div className="flex items-center gap-2 text-[11px] font-semibold tracking-wider text-muted-foreground mb-3">
-          <Quote className="size-3.5" /> FRASE DO DIA
-        </div>
-        <p className="text-base leading-relaxed italic text-foreground">"{quote.text}"</p>
-        <p className="text-xs text-muted-foreground mt-2">— {quote.author}</p>
-      </div>
-
-      <div className="rounded-2xl bg-card border border-border p-5 lg:col-span-2">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2 text-[11px] font-semibold tracking-wider text-muted-foreground">
-            <Newspaper className="size-3.5" /> NOTÍCIAS DE MARKETING & TRÁFEGO
-          </div>
-          {newsQ.isFetching && <RefreshCw className="size-3 animate-spin text-muted-foreground" />}
-        </div>
-        {newsQ.isLoading ? (
-          <div className="space-y-2">
-            {[0, 1, 2].map((i) => <div key={i} className="h-4 rounded bg-muted animate-pulse" />)}
-          </div>
-        ) : items.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Sem notícias disponíveis no momento.</p>
-        ) : (
-          <ul className="space-y-2.5">
-            {items.map((n, i) => (
-              <li key={i}>
-                <a href={n.link} target="_blank" rel="noreferrer"
-                  className="group flex items-start gap-2 text-sm hover:text-primary transition-colors">
-                  <ExternalLink className="size-3.5 mt-0.5 shrink-0 text-muted-foreground group-hover:text-primary" />
-                  <span className="flex-1">
-                    <span className="line-clamp-2">{n.title}</span>
-                    <span className="text-[11px] text-muted-foreground">{n.source}</span>
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
-  );
-}
-
-
 function TabBtn({ active, onClick, icon, label }: { active: boolean; onClick: () => void; icon: React.ReactNode; label: string }) {
   return (
     <button
@@ -425,47 +370,6 @@ function Column({ col, leads }: { col: { key: Status; title: string; dot: string
   );
 }
 
-function NewsPanel() {
-  const fetchNews = useServerFn(getMarketingNews);
-  const newsQ = useQuery({
-    queryKey: ["marketing-news"],
-    queryFn: () => fetchNews({}),
-    staleTime: 1000 * 60 * 60 * 6,
-  });
-  const items = newsQ.data?.items ?? [];
-  return (
-    <div className="rounded-2xl bg-card border border-border p-6">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2 text-[11px] font-semibold tracking-wider text-muted-foreground">
-          <Newspaper className="size-3.5" /> NOTÍCIAS DE MARKETING & TRÁFEGO
-        </div>
-        {newsQ.isFetching && <RefreshCw className="size-3 animate-spin text-muted-foreground" />}
-      </div>
-      {newsQ.isLoading ? (
-        <div className="space-y-2">
-          {[0, 1, 2, 3, 4].map((i) => <div key={i} className="h-4 rounded bg-muted animate-pulse" />)}
-        </div>
-      ) : items.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Sem notícias disponíveis no momento.</p>
-      ) : (
-        <ul className="space-y-3">
-          {items.map((n, i) => (
-            <li key={i}>
-              <a href={n.link} target="_blank" rel="noreferrer"
-                className="group flex items-start gap-2 text-sm hover:text-primary transition-colors">
-                <ExternalLink className="size-3.5 mt-0.5 shrink-0 text-muted-foreground group-hover:text-primary" />
-                <span className="flex-1">
-                  <span className="line-clamp-2">{n.title}</span>
-                  <span className="text-[11px] text-muted-foreground">{n.source}</span>
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
 
 function DraggableCard({ lead }: { lead: Lead }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: lead.id });
