@@ -282,7 +282,7 @@ function Hero() {
                   <span className="ml-1 font-semibold text-white">4.9/5</span>
                 </div>
                 <div className="text-xs text-white/55">
-                  +150 empresas · R$ 2M+ investidos com lucro
+                  +150 empresas atendidas · R$ 2,1 mi investidos com lucro
                 </div>
               </div>
             </motion.div>
