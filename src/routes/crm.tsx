@@ -251,7 +251,6 @@ function CrmPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <LabelsManager labels={labelsQ.data ?? []} />
             <NewLeadDialog />
             <button onClick={toggle} className="size-9 rounded-full hover:bg-muted flex items-center justify-center" title="Alternar tema">
               {theme === "light" ? <Moon className="size-4" /> : <Sun className="size-4" />}
