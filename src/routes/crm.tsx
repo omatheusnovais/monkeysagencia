@@ -711,9 +711,12 @@ function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: bool
     if (form.company.trim()) fields["Empresa"] = form.company.trim();
     if (form.faturamento.trim()) fields["Faturamento mensal"] = form.faturamento.trim();
     if (form.investimento.trim()) fields["Investimento"] = form.investimento.trim();
+    if (form.valorContrato.trim()) fields["Valor do contrato"] = form.valorContrato.trim();
+    if (form.inicioContrato.trim()) fields["Início do contrato"] = form.inicioContrato.trim();
     // Preserve any other diagnostic keys we don't edit explicitly
+    const known = ["Empresa", "Faturamento mensal", "Faturamento", "Investimento", "Valor do contrato", "Início do contrato"];
     for (const [k, v] of Object.entries(diagnostic)) {
-      if (!["Empresa", "Faturamento mensal", "Faturamento", "Investimento"].includes(k)) fields[k] = v;
+      if (!known.includes(k)) fields[k] = v;
     }
     const { error } = await supabase.from("leads").update({
       name: form.name.trim(),
