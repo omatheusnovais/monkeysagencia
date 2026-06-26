@@ -738,6 +738,16 @@ function OfferSection() {
     setLoading(false);
     if (err) { setError("Não foi possível enviar agora. Tente novamente."); return; }
     setSent(true);
+
+    // Meta Pixel — Lead + QualifiedLead
+    try {
+      const { fbTrack, fbTrackCustom } = await import("@/lib/fbpixel");
+      fbTrack("Lead", { content_name: "Diagnóstico gratuito", investimento, faturamento });
+      const qualified = investimento && investimento !== "Não invisto ainda";
+      if (qualified) {
+        fbTrackCustom("QualifiedLead", { investimento, faturamento, company });
+      }
+    } catch {/* ignore */}
   }
 
   return (
