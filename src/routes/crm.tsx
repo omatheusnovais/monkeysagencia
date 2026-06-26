@@ -234,7 +234,7 @@ function CrmPage() {
         {/* Top bar */}
         <header className="border-b border-border bg-card px-6 py-4 flex items-center gap-4">
           <div className="flex items-center gap-3 min-w-[260px]">
-            <h1 className="text-xl font-bold tracking-tight" style={{ fontFamily: "Georgia, serif" }}>Funil de Vendas</h1>
+            <h1 className="text-xl font-bold tracking-tight font-display">Funil de Vendas</h1>
             <span className="text-xs px-2.5 py-1 rounded-full bg-muted text-muted-foreground">Principal</span>
           </div>
           <div className="flex-1 max-w-2xl">
@@ -243,21 +243,24 @@ function CrmPage() {
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Pesquisar..."
+                placeholder="Pesquisar por nome..."
                 className="pl-9 rounded-full bg-background"
               />
             </div>
           </div>
           <div className="flex items-center gap-2">
             <LabelsManager labels={labelsQ.data ?? []} />
-            <Button className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground">
-              <Plus className="size-4 mr-1" /> NOVO LEAD
-            </Button>
+            <NewLeadDialog />
             <button onClick={toggle} className="size-9 rounded-full hover:bg-muted flex items-center justify-center" title="Alternar tema">
               {theme === "light" ? <Moon className="size-4" /> : <Sun className="size-4" />}
             </button>
-            <button className="size-9 rounded-full hover:bg-muted flex items-center justify-center" title="Notificações">
+            <button onClick={markSeen} className="relative size-9 rounded-full hover:bg-muted flex items-center justify-center" title={`${unread} novos leads`}>
               <Bell className="size-4" />
+              {unread > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                  {unread > 99 ? "99+" : unread}
+                </span>
+              )}
             </button>
             <button onClick={logout} className="size-9 rounded-full hover:bg-muted flex items-center justify-center" title="Sair">
               <LogOut className="size-4" />
