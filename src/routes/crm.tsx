@@ -409,7 +409,7 @@ function TabBtn({ active, onClick, icon, label }: { active: boolean; onClick: ()
   );
 }
 
-function Column({ col, leads, labels }: { col: { key: Status; title: string; dot: string }; leads: Lead[]; labels: LabelRow[] }) {
+function Column({ col, leads }: { col: { key: Status; title: string; dot: string }; leads: Lead[] }) {
   const { setNodeRef, isOver } = useDroppable({ id: col.key });
   return (
     <div ref={setNodeRef} className={`flex flex-col min-h-[60vh] rounded-xl transition-colors ${isOver ? "bg-primary/5" : ""}`}>
@@ -426,7 +426,7 @@ function Column({ col, leads, labels }: { col: { key: Status; title: string; dot
             Solte cards aqui
           </div>
         ) : (
-          leads.map((l) => <DraggableCard key={l.id} lead={l} labels={labels} />)
+          leads.map((l) => <DraggableCard key={l.id} lead={l} />)
         )}
       </div>
     </div>
