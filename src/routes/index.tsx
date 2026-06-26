@@ -221,12 +221,12 @@ function Hero() {
               Mais previsibilidade
               <br />
               na sua{" "}
-              <span className="relative inline-block bg-gradient-to-r from-white via-[#c9d4ff] to-[#a48bff] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-white via-[#c9d4ff] to-[#a48bff] bg-clip-text text-transparent">
                 geração de
-                <br />
+              </span>
+              <br />
+              <span className="relative inline-block bg-gradient-to-r from-white via-[#c9d4ff] to-[#a48bff] bg-clip-text text-transparent">
                 clientes.
-
-
                 <svg
                   aria-hidden
                   viewBox="0 0 300 12"
@@ -236,6 +236,7 @@ function Hero() {
                   <path d="M2 8 Q 75 2, 150 6 T 298 5" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" />
                 </svg>
               </span>
+
             </motion.h1>
 
             <motion.p
