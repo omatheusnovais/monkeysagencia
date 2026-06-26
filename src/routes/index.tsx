@@ -651,19 +651,36 @@ function AboutSection() {
           </motion.div>
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}>
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
-              <Shield className="h-3 w-3 text-[#4F7CFF]" /> Sobre nós
+              <Shield className="h-3 w-3 text-[#4F7CFF]" /> Quem está por trás
             </div>
             <h2 className="mt-4 text-3xl font-bold tracking-tight md:text-5xl">
-              Especialista em <span className="bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] bg-clip-text text-transparent">Performance</span>
+              Matheus Novais, <span className="bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] bg-clip-text text-transparent">+12 anos</span> de mercado
             </h2>
             <p className="mt-6 text-white/70">
-              Há mais de 5 anos a gente só faz uma coisa: transformar verba de tráfego em cliente pagante. Já passaram pelas nossas mãos +R$ 2,1 milhões em mídia e mais de 150 operações, de clínicas locais a SaaS B2B.
+              Designer, Gestor de Tráfego e Especialista em Marketing Digital pela UNOPAR, com ênfase em Redes Sociais, Gestão de Crises e Lifecoach. Há mais de 12 anos atua como mentor e estrategista digital de empresas e empreendedores, ajudando-os a criar experiências únicas para seus clientes por meio do design e do marketing. Atualmente cursa Teologia pela Unicesumar.
             </p>
+            <p className="mt-4 text-white/70">
+              No portfólio: <span className="text-white">Pactus Brasil, Tudo Belo Estética, IESE Cursos, Larissa Lobo Academy, Wanna Bear, Goiânia Shopping, Casa do Pica-Pau, Passeio das Águas, Órion Complex, Buena Vista, Grupo Navesa, IGD, Thaê</span> e muitas outras.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-2">
+              {[
+                "Facebook & Instagram Ads",
+                "Inbound Marketing",
+                "Geração de Leads",
+                "Web Design",
+                "Social Media 360°",
+                "Estratégia de Conteúdo",
+                "WhatsApp Business",
+                "Branding",
+              ].map(q => (
+                <span key={q} className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">{q}</span>
+              ))}
+            </div>
             <div className="mt-8 grid grid-cols-3 gap-3">
               {[
-                { v: "+150", l: "Projetos" },
+                { v: "+12 anos", l: "Mercado" },
                 { v: "+R$ 2M", l: "Investidos" },
-                { v: "5 Anos", l: "Experiência" },
+                { v: "+150", l: "Operações" },
               ].map(h => (
                 <div key={h.l} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-center backdrop-blur">
                   <div className="bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] bg-clip-text text-xl font-black text-transparent">{h.v}</div>
