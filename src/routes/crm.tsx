@@ -450,6 +450,7 @@ function LeadCard({ lead, dragging }: { lead: Lead; dragging?: boolean }) {
   const qc = useQueryClient();
   const [detailOpen, setDetailOpen] = useState(false);
   const company = lead.message?.split("\n").find((line) => line.toLowerCase().includes("empresa"))?.split(":")[1]?.trim();
+  const valorContrato = lead.message?.split("\n").find((line) => line.startsWith("Valor do contrato:"))?.split(":").slice(1).join(":").trim() ?? "";
   const dateStr = new Date(lead.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
 
   async function remove() {
