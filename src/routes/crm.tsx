@@ -295,6 +295,7 @@ function CrmPage() {
           <div className="flex items-center justify-between gap-3 rounded-2xl bg-card border border-border px-3 py-2">
             <div className="flex items-center gap-1">
               <TabBtn active={view === "kanban"} onClick={() => setView("kanban")} icon={<LayoutGrid className="size-4" />} label="KANBAN" />
+              <TabBtn active={view === "stats"} onClick={() => setView("stats")} icon={<PieChart className="size-4" />} label="ESTATÍSTICAS" />
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" className="rounded-full"><Filter className="size-4 mr-1" /> FILTRAR</Button>
