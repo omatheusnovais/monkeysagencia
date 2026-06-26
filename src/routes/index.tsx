@@ -640,7 +640,7 @@ function AboutSection() {
               Especialista em <span className="bg-gradient-to-r from-[#4F7CFF] to-[#8B5CF6] bg-clip-text text-transparent">Performance</span>
             </h2>
             <p className="mt-6 text-white/70">
-              Com mais de 5 anos ajudando empresas a escalarem com tráfego pago, já gerenciamos mais de R$ 2 milhões em anúncios e entregamos resultados consistentes.
+              Há mais de 5 anos a gente só faz uma coisa: transformar verba de tráfego em cliente pagante. Já passaram pelas nossas mãos +R$ 2,1 milhões em mídia e mais de 150 operações — de clínicas locais a SaaS B2B.
             </p>
             <div className="mt-8 grid grid-cols-3 gap-3">
               {[
