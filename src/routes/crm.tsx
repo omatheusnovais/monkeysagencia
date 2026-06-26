@@ -195,13 +195,21 @@ function CrmPage() {
 
   const totals = useMemo(() => {
     const all = leadsQ.data ?? [];
+    const fechados = all.filter((l) => l.status === "contrato_fechado");
+    const receita = fechados.reduce((sum, l) => {
+      const raw = l.message?.split("\n").find((line) => line.startsWith("Valor do contrato:"))?.split(":").slice(1).join(":").trim() ?? "";
+      const num = Number(raw.replace(/[^\d,.-]/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", "."));
+      return sum + (isFinite(num) ? num : 0);
+    }, 0);
     return {
       leads: all.filter((l) => l.status === "novos" || l.status === "em_contato").length,
-      vendas: all.filter((l) => l.status === "contrato_fechado").length,
+      vendas: fechados.length,
       perdidos: all.filter((l) => l.status === "desqualificado").length,
       total: all.length,
+      receita,
     };
   }, [leadsQ.data]);
+
 
   const moveMut = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: Status }) => {
