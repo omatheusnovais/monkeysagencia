@@ -528,3 +528,66 @@ function LabelsManager({ labels }: { labels: LabelRow[] }) {
     </Dialog>
   );
 }
+
+function NewLeadDialog() {
+  const qc = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
+
+  function reset() { setForm({ name: "", email: "", phone: "", message: "" }); }
+
+  async function save() {
+    if (!form.name.trim()) return;
+    setSaving(true);
+    const { error } = await supabase.from("leads").insert({
+      name: form.name.trim(),
+      email: form.email.trim() || null,
+      phone: form.phone.trim() || null,
+      message: form.message.trim() || null,
+      status: "novos",
+    });
+    setSaving(false);
+    if (error) { alert("Erro ao criar lead: " + error.message); return; }
+    qc.invalidateQueries({ queryKey: ["leads"] });
+    reset();
+    setOpen(false);
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) reset(); }}>
+      <DialogTrigger asChild>
+        <Button className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground">
+          <Plus className="size-4 mr-1" /> NOVO LEAD
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-md">
+        <DialogHeader><DialogTitle>Cadastrar lead manualmente</DialogTitle></DialogHeader>
+        <div className="space-y-3">
+          <div className="space-y-1.5">
+            <Label htmlFor="nl-name" className="text-xs">Nome *</Label>
+            <Input id="nl-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} autoFocus />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="nl-phone" className="text-xs">WhatsApp / Telefone</Label>
+            <Input id="nl-phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="nl-email" className="text-xs">Email</Label>
+            <Input id="nl-email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="nl-msg" className="text-xs">Observações</Label>
+            <Input id="nl-msg" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder="Empresa, faturamento, etc." />
+          </div>
+        </div>
+        <DialogFooter className="gap-2">
+          <Button variant="ghost" onClick={() => setOpen(false)}>Cancelar</Button>
+          <Button onClick={save} disabled={saving || !form.name.trim()}>
+            <Plus className="size-4 mr-1" /> {saving ? "Salvando..." : "Criar lead"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
