@@ -628,6 +628,22 @@ function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: bool
       if (k && v) parsed[k] = v;
     }
   });
+  const noteKey = "Anotação" in parsed ? "Anotação" : ("Anotacao" in parsed ? "Anotacao" : "Anotação");
+  const diagnostic = Object.fromEntries(Object.entries(parsed).filter(([k]) => k !== "Anotação" && k !== "Anotacao"));
+  const [noteDraft, setNoteDraft] = useState(parsed[noteKey] ?? "");
+  const [savingNote, setSavingNote] = useState(false);
+  useEffect(() => { setNoteDraft(parsed[noteKey] ?? ""); /* eslint-disable-next-line */ }, [lead.id, lead.message]);
+  async function saveNote() {
+    setSavingNote(true);
+    const others = Object.entries(parsed).filter(([k]) => k !== "Anotação" && k !== "Anotacao");
+    const lines = others.map(([k, v]) => `${k}: ${v}`);
+    if (noteDraft.trim()) lines.push(`Anotação: ${noteDraft.trim()}`);
+    const { error } = await supabase.from("leads").update({ message: lines.length ? lines.join("\n") : null }).eq("id", lead.id);
+    setSavingNote(false);
+    if (error) { alert("Erro ao salvar anotação: " + error.message); return; }
+    qc.invalidateQueries({ queryKey: ["leads"] });
+  }
+
   const utms = [
     ["utm_source", lead.utm_source],
     ["utm_medium", lead.utm_medium],
