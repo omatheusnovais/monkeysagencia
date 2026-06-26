@@ -628,6 +628,22 @@ function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: bool
       if (k && v) parsed[k] = v;
     }
   });
+  const noteKey = "Anotação" in parsed ? "Anotação" : ("Anotacao" in parsed ? "Anotacao" : "Anotação");
+  const diagnostic = Object.fromEntries(Object.entries(parsed).filter(([k]) => k !== "Anotação" && k !== "Anotacao"));
+  const [noteDraft, setNoteDraft] = useState(parsed[noteKey] ?? "");
+  const [savingNote, setSavingNote] = useState(false);
+  useEffect(() => { setNoteDraft(parsed[noteKey] ?? ""); /* eslint-disable-next-line */ }, [lead.id, lead.message]);
+  async function saveNote() {
+    setSavingNote(true);
+    const others = Object.entries(parsed).filter(([k]) => k !== "Anotação" && k !== "Anotacao");
+    const lines = others.map(([k, v]) => `${k}: ${v}`);
+    if (noteDraft.trim()) lines.push(`Anotação: ${noteDraft.trim()}`);
+    const { error } = await supabase.from("leads").update({ message: lines.length ? lines.join("\n") : null }).eq("id", lead.id);
+    setSavingNote(false);
+    if (error) { alert("Erro ao salvar anotação: " + error.message); return; }
+    qc.invalidateQueries({ queryKey: ["leads"] });
+  }
+
   const utms = [
     ["utm_source", lead.utm_source],
     ["utm_medium", lead.utm_medium],
@@ -771,10 +787,10 @@ function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: bool
               <Field icon={<Phone className="size-3.5" />} label="WhatsApp / Telefone" value={lead.phone ?? "—"} />
             </div>
 
-            {Object.keys(parsed).length > 0 && (
+            {Object.keys(diagnostic).length > 0 && (
               <div className="rounded-lg border border-border p-3 space-y-2">
                 <h4 className="text-xs font-semibold tracking-wider text-muted-foreground">RESPOSTAS DO DIAGNÓSTICO</h4>
-                {Object.entries(parsed).map(([k, v]) => (
+                {Object.entries(diagnostic).map(([k, v]) => (
                   <div key={k} className="flex justify-between gap-3 text-sm">
                     <span className="text-muted-foreground">{k}</span>
                     <span className="font-medium text-right">{v}</span>
@@ -782,6 +798,23 @@ function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: bool
                 ))}
               </div>
             )}
+
+            <div className="rounded-lg border border-border p-3 space-y-2">
+              <h4 className="text-xs font-semibold tracking-wider text-muted-foreground">ANOTAÇÕES</h4>
+              <textarea
+                value={noteDraft}
+                onChange={(e) => setNoteDraft(e.target.value)}
+                rows={3}
+                placeholder="Adicione observações internas sobre este lead..."
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+              <div className="flex justify-end">
+                <Button size="sm" onClick={saveNote} disabled={savingNote || noteDraft === (parsed[noteKey] ?? "")}>
+                  {savingNote ? "Salvando..." : "Salvar anotação"}
+                </Button>
+              </div>
+            </div>
+
 
             {utms.length > 0 && (
               <div className="rounded-lg border border-border p-3 space-y-1.5">
