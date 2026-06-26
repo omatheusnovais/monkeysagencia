@@ -1,7 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
+import { getDailyQuote } from "@/lib/quotes";
+import { getMarketingNews } from "@/lib/news.functions";
+
 import {
   DndContext,
   type DragEndEvent,
@@ -51,6 +55,10 @@ import {
   Sun,
   Moon,
   Calendar,
+  Quote,
+  Newspaper,
+  ExternalLink,
+
 } from "lucide-react";
 
 export const Route = createFileRoute("/crm")({
