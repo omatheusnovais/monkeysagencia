@@ -342,7 +342,7 @@ function ResultsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-transparent p-8 backdrop-blur"
+              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-transparent p-8 backdrop-blur hover-lift hover-glow"
             >
               <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[#4F7CFF]/20 blur-3xl transition-all group-hover:bg-[#4F7CFF]/40" />
               <div className="relative bg-gradient-to-br from-white to-white/60 bg-clip-text text-4xl font-black text-transparent md:text-5xl">
