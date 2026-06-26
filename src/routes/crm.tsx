@@ -606,55 +606,51 @@ function LeadDetailDialog({ lead, open, onOpenChange }: { lead: Lead; open: bool
     email: lead.email ?? "",
     phone: lead.phone ?? "",
     status: lead.status,
-    company: parsed["Empresa"] ?? "",
-    faturamento: parsed["Faturamento mensal"] ?? parsed["Faturamento"] ?? "",
-    investimento: parsed["Investimento"] ?? "",
-    note: parsed["Anotação"] ?? parsed["Anotacao"] ?? "",
+    company: diagnostic["Empresa"] ?? "",
+    faturamento: diagnostic["Faturamento mensal"] ?? diagnostic["Faturamento"] ?? "",
+    investimento: diagnostic["Investimento"] ?? "",
   });
 
   useEffect(() => {
     setEditing(false);
-    const p: Record<string, string> = {};
-    (lead.message ?? "").split("\n").forEach((line) => {
-      const i = line.indexOf(":");
-      if (i > 0) {
-        const k = line.slice(0, i).trim();
-        const v = line.slice(i + 1).trim();
-        if (k && v) p[k] = v;
-      }
-    });
     setForm({
       name: lead.name,
       email: lead.email ?? "",
       phone: lead.phone ?? "",
       status: lead.status,
-      company: p["Empresa"] ?? "",
-      faturamento: p["Faturamento mensal"] ?? p["Faturamento"] ?? "",
-      investimento: p["Investimento"] ?? "",
-      note: p["Anotação"] ?? p["Anotacao"] ?? "",
+      company: diagnostic["Empresa"] ?? "",
+      faturamento: diagnostic["Faturamento mensal"] ?? diagnostic["Faturamento"] ?? "",
+      investimento: diagnostic["Investimento"] ?? "",
     });
-  }, [lead]);
+    setNoteDraft("");
+    setEditingNoteId(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lead.id]);
 
   async function saveEdit() {
     if (!form.name.trim()) return;
     setSaving(true);
-    const lines: string[] = [];
-    if (form.company.trim()) lines.push(`Empresa: ${form.company.trim()}`);
-    if (form.faturamento.trim()) lines.push(`Faturamento mensal: ${form.faturamento.trim()}`);
-    if (form.investimento.trim()) lines.push(`Investimento: ${form.investimento.trim()}`);
-    if (form.note.trim()) lines.push(`Anotação: ${form.note.trim()}`);
+    const fields: Record<string, string> = {};
+    if (form.company.trim()) fields["Empresa"] = form.company.trim();
+    if (form.faturamento.trim()) fields["Faturamento mensal"] = form.faturamento.trim();
+    if (form.investimento.trim()) fields["Investimento"] = form.investimento.trim();
+    // Preserve any other diagnostic keys we don't edit explicitly
+    for (const [k, v] of Object.entries(diagnostic)) {
+      if (!["Empresa", "Faturamento mensal", "Faturamento", "Investimento"].includes(k)) fields[k] = v;
+    }
     const { error } = await supabase.from("leads").update({
       name: form.name.trim(),
       email: form.email.trim() || null,
       phone: form.phone.trim() || null,
       status: form.status,
-      message: lines.length ? lines.join("\n") : null,
+      message: serializeMessage(fields, notes),
     }).eq("id", lead.id);
     setSaving(false);
     if (error) { alert("Erro ao salvar: " + error.message); return; }
     qc.invalidateQueries({ queryKey: ["leads"] });
     setEditing(false);
   }
+
 
 
 
