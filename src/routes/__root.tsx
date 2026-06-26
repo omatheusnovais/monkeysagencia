@@ -74,22 +74,29 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
-    meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Monkeys Agência - Performance & Resultados" },
-      { name: "description", content: "A solução digital de alta performance no Marketing Estratégico. Não existe uma receita de bolo para o marketing. Cada negócio precisa ser estudado e ter suas es" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Monkeys Agência - Performance & Resultados" },
-      { property: "og:description", content: "A solução digital de alta performance no Marketing Estratégico. Não existe uma receita de bolo para o marketing. Cada negócio precisa ser estudado e ter suas es" },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Monkeys Agência - Performance & Resultados" },
-      { name: "twitter:description", content: "A solução digital de alta performance no Marketing Estratégico. Não existe uma receita de bolo para o marketing. Cada negócio precisa ser estudado e ter suas es" },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a7b3e782-1e8c-45c0-8f01-b572cee23224/id-preview-54453b6e--47ae9b7b-c0dc-4e90-8fc1-45df600fffe5.lovable.app-1782494092658.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a7b3e782-1e8c-45c0-8f01-b572cee23224/id-preview-54453b6e--47ae9b7b-c0dc-4e90-8fc1-45df600fffe5.lovable.app-1782494092658.png" },
-    ],
+    meta: (() => {
+      const title = "Monkeys Agência - Performance & Resultados";
+      const description = "A solução digital de alta performance no Marketing Estratégico. Não existe uma receita de bolo para o marketing. Cada negócio precisa ser estudado.";
+      const image = "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a7b3e782-1e8c-45c0-8f01-b572cee23224/id-preview-54453b6e--47ae9b7b-c0dc-4e90-8fc1-45df600fffe5.lovable.app-1782494092658.png";
+      const url = "https://monkeysagencia.com.br";
+      return [
+        { charSet: "utf-8" },
+        { name: "viewport", content: "width=device-width, initial-scale=1" },
+        { title },
+        { name: "description", content: description },
+        { name: "author", content: "Monkeys Agência" },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: url },
+        { property: "og:image", content: image },
+        { property: "og:site_name", content: "Monkeys Agência" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        { name: "twitter:image", content: image },
+      ];
+    })(),
     links: [
       {
         rel: "stylesheet",
