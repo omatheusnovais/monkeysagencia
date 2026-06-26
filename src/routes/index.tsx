@@ -230,7 +230,7 @@ function Hero() {
               variants={fadeUp}
               className="mt-7 max-w-xl text-base leading-relaxed text-white/65 md:text-lg"
             >
-              Sistema previsível de aquisição com <span className="text-white">Meta Ads</span>, <span className="text-white">Google Ads</span>, landing pages otimizadas e automações com IA — tudo conectado para você vender mais sem depender de sorte.
+              Cansado de gastar com anúncio e não ver retorno? A gente monta o seu sistema de aquisição com <span className="text-white">Meta Ads</span>, <span className="text-white">Google Ads</span>, landing page de alta conversão e IA que qualifica seus leads — para você vender todo dia, sem depender de sorte.
             </motion.p>
 
             <motion.ul variants={fadeUp} className="mt-7 grid gap-2.5 sm:grid-cols-2">
