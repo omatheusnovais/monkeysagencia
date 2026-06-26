@@ -259,7 +259,7 @@ function Hero() {
                 className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-7 py-4 text-sm font-semibold text-white backdrop-blur-xl transition-all hover:border-white/25 hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
               >
                 <MessageSquare className="h-4 w-4 text-emerald-400" />
-                Falar no WhatsApp
+                Falar com especialista no WhatsApp
               </a>
             </motion.div>
 
