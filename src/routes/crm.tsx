@@ -220,7 +220,8 @@ function CrmPage() {
 
   const moveMut = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: Status }) => {
-      const { error } = await supabase.from("leads").update({ status, position: Date.now() }).eq("id", id);
+      const position = Math.floor(Date.now() / 1000);
+      const { error } = await supabase.from("leads").update({ status, position }).eq("id", id);
       if (error) throw error;
     },
     onMutate: async ({ id, status }) => {
