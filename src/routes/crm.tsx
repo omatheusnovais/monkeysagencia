@@ -11,12 +11,17 @@ import {
   DndContext,
   type DragEndEvent,
   type DragStartEvent,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   useDraggable,
   useDroppable,
   DragOverlay,
+  pointerWithin,
+  rectIntersection,
+  type CollisionDetection,
+  MeasuringStrategy,
 } from "@dnd-kit/core";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,6 +99,11 @@ const COLUMNS: { key: Status; title: string; dot: string }[] = [
   { key: "desqualificado", title: "DESQUALIFICADO", dot: "#64748b" },
 ];
 
+const kanbanCollisionDetection: CollisionDetection = (args) => {
+  const pointerCollisions = pointerWithin(args);
+  return pointerCollisions.length > 0 ? pointerCollisions : rectIntersection(args);
+};
+
 function useTheme() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   useEffect(() => {
@@ -159,7 +169,10 @@ function CrmPage() {
     return () => { supabase.removeChannel(ch); };
   }, [ready, qc]);
 
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 120, tolerance: 8 } }),
+  );
 
   const filtered = useMemo(() => {
     const list = leadsQ.data ?? [];
@@ -315,7 +328,13 @@ function CrmPage() {
 
           {/* Kanban */}
           {view === "kanban" && (
-            <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={kanbanCollisionDetection}
+              measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
+              onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
+            >
               <div className="rounded-2xl bg-card border border-border p-4">
                 <div className="flex gap-4 overflow-x-auto pb-2">
                   {COLUMNS.map((col) => (
@@ -431,7 +450,10 @@ function Column({ col, leads }: { col: { key: Status; title: string; dot: string
 
 function DraggableCard({ lead }: { lead: Lead }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: lead.id });
-  const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` } : undefined;
+  const style = {
+    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    touchAction: "none",
+  };
   const movedRef = useRef(false);
   return (
     <div
@@ -439,18 +461,17 @@ function DraggableCard({ lead }: { lead: Lead }) {
       style={style}
       {...attributes}
       {...listeners}
-      onPointerDown={(e) => {
+      onPointerDownCapture={() => {
         movedRef.current = false;
-        listeners?.onPointerDown?.(e);
       }}
-      onPointerMove={() => { movedRef.current = true; }}
+      onPointerMoveCapture={() => { movedRef.current = true; }}
       onClickCapture={(e) => {
         if (isDragging || movedRef.current) {
           e.stopPropagation();
           e.preventDefault();
         }
       }}
-      className={isDragging ? "opacity-30" : ""}
+      className={`touch-none select-none ${isDragging ? "opacity-30" : ""}`}
     >
       <LeadCard lead={lead} />
     </div>
