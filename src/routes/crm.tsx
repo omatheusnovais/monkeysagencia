@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getMarketingNews } from "@/lib/news.functions";
@@ -450,7 +450,7 @@ function Column({ col, leads }: { col: { key: Status; title: string; dot: string
 
 function DraggableCard({ lead }: { lead: Lead }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: lead.id });
-  const style = {
+  const style: CSSProperties = {
     transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
     touchAction: "none",
   };
