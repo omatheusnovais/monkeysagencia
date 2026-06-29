@@ -432,8 +432,26 @@ function Column({ col, leads }: { col: { key: Status; title: string; dot: string
 function DraggableCard({ lead }: { lead: Lead }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: lead.id });
   const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` } : undefined;
+  const movedRef = React.useRef(false);
   return (
-    <div ref={setNodeRef} style={style} {...listeners} {...attributes} className={isDragging ? "opacity-30" : ""}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      onPointerDown={(e) => {
+        movedRef.current = false;
+        listeners?.onPointerDown?.(e);
+      }}
+      onPointerMove={() => { movedRef.current = true; }}
+      onClickCapture={(e) => {
+        if (isDragging || movedRef.current) {
+          e.stopPropagation();
+          e.preventDefault();
+        }
+      }}
+      className={isDragging ? "opacity-30" : ""}
+    >
       <LeadCard lead={lead} />
     </div>
   );
