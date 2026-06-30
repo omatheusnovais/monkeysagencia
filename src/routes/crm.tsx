@@ -260,36 +260,37 @@ function CrmPage() {
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
-        <header className="border-b border-border bg-card px-6 py-4 flex items-center gap-4">
-          <div className="flex items-center gap-3 min-w-[260px]">
-            <h1 className="text-xl font-bold tracking-tight font-display">Funil de Vendas</h1>
-            <span className="text-xs px-2.5 py-1 rounded-full bg-muted text-muted-foreground">Principal</span>
+        <header className="border-b border-border bg-card px-6 py-3 grid grid-cols-[auto_1fr_auto] items-center gap-6">
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-lg font-bold tracking-tight font-display whitespace-nowrap">Funil de Vendas</h1>
+            <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-muted text-muted-foreground">Principal</span>
           </div>
-          <div className="flex-1 max-w-2xl">
+          <div className="justify-self-center w-full max-w-md">
             <div className="relative">
-              <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Search className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Pesquisar por nome..."
-                className="pl-9 rounded-full bg-background"
+                className="pl-10 h-10 rounded-full bg-background"
               />
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <NewLeadDialog />
-            <button onClick={toggle} className="size-9 rounded-full hover:bg-muted flex items-center justify-center" title="Alternar tema">
+            <div className="w-px h-6 bg-border mx-2" />
+            <button onClick={toggle} className="size-9 rounded-full hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition" title="Alternar tema">
               {theme === "light" ? <Moon className="size-4" /> : <Sun className="size-4" />}
             </button>
-            <button onClick={markSeen} className="relative size-9 rounded-full hover:bg-muted flex items-center justify-center" title={`${unread} novos leads`}>
+            <button onClick={markSeen} className="relative size-9 rounded-full hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition" title={`${unread} novos leads`}>
               <Bell className="size-4" />
               {unread > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                <span className="absolute top-1 right-1 min-w-[16px] h-[16px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
                   {unread > 99 ? "99+" : unread}
                 </span>
               )}
             </button>
-            <button onClick={logout} className="size-9 rounded-full hover:bg-muted flex items-center justify-center" title="Sair">
+            <button onClick={logout} className="size-9 rounded-full hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition" title="Sair">
               <LogOut className="size-4" />
             </button>
           </div>
