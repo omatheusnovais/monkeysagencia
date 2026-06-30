@@ -277,7 +277,8 @@ function CrmPage() {
               />
             </div>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 ml-auto shrink-0">
+
             <NewLeadDialog />
             <div className="w-px h-6 bg-border mx-2" />
             <button onClick={toggle} className="size-9 rounded-full hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition" title="Alternar tema">
