@@ -260,12 +260,13 @@ function CrmPage() {
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
-        <header className="border-b border-border bg-card px-6 py-3 grid grid-cols-[auto_1fr_auto] items-center gap-6">
-          <div className="flex items-center gap-2.5">
+        <header className="border-b border-border bg-card px-4 sm:px-6 py-3 flex flex-wrap items-center gap-3 sm:gap-4 md:gap-6">
+          <div className="flex items-center gap-2.5 shrink-0">
             <h1 className="text-lg font-bold tracking-tight font-display whitespace-nowrap">Funil de Vendas</h1>
-            <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-muted text-muted-foreground">Principal</span>
+            <span className="hidden sm:inline text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-muted text-muted-foreground">Principal</span>
           </div>
-          <div className="justify-self-center w-full max-w-md">
+          <div className="order-3 md:order-none flex-1 basis-full md:basis-0 min-w-0">
+
             <div className="relative">
               <Search className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <Input
@@ -276,7 +277,8 @@ function CrmPage() {
               />
             </div>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 ml-auto shrink-0">
+
             <NewLeadDialog />
             <div className="w-px h-6 bg-border mx-2" />
             <button onClick={toggle} className="size-9 rounded-full hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition" title="Alternar tema">
